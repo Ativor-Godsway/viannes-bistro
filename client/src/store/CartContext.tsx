@@ -13,7 +13,7 @@ import { api } from '../lib/api';
 import type { MenuItem } from '../lib/types';
 import { lineKey, resolveVariant, round2, unitPrice, type Selections } from '../lib/pricing';
 
-const STORAGE_KEY = 'besties_cart_v2';
+const STORAGE_KEY = 'viannes_cart_v1';
 
 export interface CartLineOption {
   groupId: string;

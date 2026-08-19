@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../store/CartContext';
+import Wordmark from './ui/Wordmark';
 
 /** Smooth-scrolls to an element, or to the top when no id is given. */
 function scrollTo(id?: string) {
@@ -14,32 +15,41 @@ function scrollTo(id?: string) {
 }
 
 /**
- * The entire navigation for a one-page shop: wordmark, one anchor, cart.
+ * The deep-red navigation band.
  *
- * The shop is one page, so ON THE HOMEPAGE these are scroll controls, not
- * links — the menu is a section of this page and the cart is a drawer over it.
- *
- * OFF the homepage they have to be real links. `scrollTo()` only scrolls the
- * current document and `#menu` does not exist anywhere but `/`, so on
- * /checkout both were silent no-ops and the page was a dead end.
+ * The shop is still ONE PAGE, and this bar has not been converted to routes.
+ * On the homepage the links are scroll controls; off it they are real links
+ * back to `/#menu`, because `scrollTo()` only scrolls the current document and
+ * `#menu` exists nowhere but `/` — which is how /checkout became a dead end
+ * once before.
  *
  * Where it navigates it is an <a>, never a button: cmd-click, middle-click,
  * "open in new tab" and the way screen readers announce a link all depend on
  * being a real anchor with an href.
+ *
+ * The bar is solid deep red at every scroll position, so unlike the old build
+ * there is no transparent state, no scrim and no scroll listener.
  */
+
+/**
+ * The section anchors. `to` is the off-homepage fallback.
+ *
+ * `About` (#about) and `Find us` (#find-us) are gone with the sections that
+ * carried those ids — the feature block and the how-it-works strip. A link to
+ * an id that is no longer in the document scrolls nowhere and silently does
+ * nothing, which is worse than not offering it.
+ */
+const LINKS = [
+  { label: 'Menu', id: 'menu', to: '/#menu' },
+  { label: 'Order', id: 'menu', to: '/#menu' },
+  { label: 'Memories', id: 'memories', to: '/#memories' },
+];
+
 export default function Navbar() {
   const { itemCount, addPulse, openCart } = useCart();
   const { pathname } = useLocation();
-  const [scrolled, setScrolled] = useState(false);
   const badgeRef = useRef<HTMLSpanElement>(null);
   const seenPulse = useRef(addPulse);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   // A single scale pop on add, so the feedback lands even when the user's eyes
   // are still on the card they just tapped.
@@ -54,105 +64,76 @@ export default function Navbar() {
     );
   }, [addPulse]);
 
-  // Only the homepage puts a dark hero behind the bar. Everywhere else the
-  // page starts on cream, so the bar is solid from the top — cream-on-cream
-  // text needed a scrim to be legible at all, which looked like a smudge.
-  // The homepage is the only route with a hero behind the bar, and the only
-  // one where the menu is a section of the current document.
   const isHome = pathname === '/';
-  const solid = scrolled || !isHome;
-  const onDark = !solid;
 
-  // Extracted so the button and the link render identically — the only
-  // difference between the two branches should be the element itself.
-  const wordmarkClass = 'flex items-center gap-2';
-  const menuClass = `hidden font-body text-sm font-semibold transition-colors duration-150 hover:text-gold sm:inline ${
-    onDark ? 'text-cream drop-shadow' : 'text-charcoal'
-  }`;
-  const wordmark = (
-    <>
-      <span className="grid h-9 w-9 place-items-center rounded-full bg-brick text-lg">🍔</span>
-      <span
-        className={`font-poster text-xl uppercase tracking-tight transition-colors duration-150 ${
-          onDark ? 'text-cream drop-shadow' : 'text-charcoal'
-        }`}
-      >
-        Besties
-      </span>
-    </>
-  );
+  const linkClass =
+    'font-display text-xs font-semibold uppercase tracking-wide text-brand-cream/85 transition-colors duration-150 hover:text-brand-cream';
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-nav transition-colors duration-150 ${
-        solid ? 'bg-creamLt/95 shadow-sm backdrop-blur' : 'bg-transparent'
-      }`}
-    >
-      {/* Scrim for the un-scrolled state. The hero crops a photograph into the
-          top-right corner, and cream-on-photo left the nav barely readable
-          exactly where the pizza sits. Fades out once the bar goes solid. */}
-      {onDark && (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-charcoal/35 to-transparent"
-        />
-      )}
-      <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-        {/* Same markup either way — only the element around it changes. */}
+    <header className="sticky top-0 z-nav bg-brand-redDeep">
+      <nav className="relative mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
         {isHome ? (
           <button
             type="button"
             onClick={() => scrollTo()}
-            className={wordmarkClass}
-            aria-label="Besties — back to top"
+            className="shrink-0 text-left"
+            aria-label="Viannes Bistro — back to top"
           >
-            {wordmark}
+            <Wordmark variant="text" />
           </button>
         ) : (
-          <Link to="/" className={wordmarkClass} aria-label="Besties — back to the shop">
-            {wordmark}
+          <Link
+            to="/"
+            className="shrink-0"
+            aria-label="Viannes Bistro — back to the shop"
+          >
+            <Wordmark variant="text" />
           </Link>
         )}
 
-        <div className="flex items-center gap-3 sm:gap-5">
-          {isHome ? (
-            <button
-              type="button"
-              onClick={() => scrollTo('menu')}
-              className={menuClass}
-              aria-label="Scroll to the menu"
-            >
-              Menu
-            </button>
-          ) : (
-            // Home reads the hash and scrolls once the section has rendered,
-            // so this never tries to scroll to an element that isn't there yet.
-            <Link to="/#menu" className={menuClass} aria-label="Go to the menu">
-              Menu
-            </Link>
-          )}
-
-          <button
-            type="button"
-            onClick={openCart}
-            className="relative grid h-11 w-11 place-items-center rounded-full bg-brick text-cream shadow-md transition-transform duration-150 hover:scale-105 active:scale-95"
-            aria-label={
-              itemCount > 0
-                ? `Open cart, ${itemCount} item${itemCount === 1 ? '' : 's'}`
-                : 'Open cart'
-            }
-          >
-            🛒
-            {itemCount > 0 && (
-              <span
-                ref={badgeRef}
-                className="absolute -right-1 -top-1 grid h-5 min-w-[1.25rem] place-items-center rounded-full bg-brick px-1 text-[0.7rem] font-bold tabular-nums text-cream ring-2 ring-creamLt"
+        {/* Centre-right cluster. Hidden on the narrowest screens, where the
+            cart pill and the wordmark are the only things that fit. */}
+        <div className="ml-auto hidden items-center gap-6 sm:flex">
+          {LINKS.map((link) =>
+            isHome ? (
+              <button
+                key={link.label}
+                type="button"
+                onClick={() => scrollTo(link.id)}
+                className={linkClass}
               >
-                {itemCount}
-              </span>
-            )}
-          </button>
+                {link.label}
+              </button>
+            ) : (
+              <Link key={link.label} to={link.to} className={linkClass}>
+                {link.label}
+              </Link>
+            )
+          )}
         </div>
+
+        {/* Cart as an outline pill carrying the count, per the reference. */}
+        <button
+          type="button"
+          onClick={openCart}
+          className="ml-auto inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border-2 border-brand-cream px-4 font-display text-xs font-semibold uppercase tracking-wide text-brand-cream transition-colors duration-150 hover:bg-brand-cream hover:text-brand-redDeep sm:ml-0"
+          aria-label={
+            itemCount > 0
+              ? `Open cart, ${itemCount} item${itemCount === 1 ? '' : 's'}`
+              : 'Open cart'
+          }
+        >
+          <span>Cart</span>
+          {/* No "0" badge on an empty cart — it reads as a real count. */}
+          {itemCount > 0 && (
+            <span
+              ref={badgeRef}
+              className="grid h-6 min-w-[1.5rem] place-items-center rounded-full bg-brand-orange px-1.5 text-[0.7rem] font-bold tabular-nums text-brand-ink"
+            >
+              {itemCount}
+            </span>
+          )}
+        </button>
       </nav>
     </header>
   );

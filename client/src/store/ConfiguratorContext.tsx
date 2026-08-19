@@ -22,8 +22,11 @@ import { useCart, type Configuration, type CartLine } from './CartContext';
  * appears no matter where the item was added from.
  */
 interface ConfiguratorValue {
-  /** Open the configurator for an item. */
-  configure: (item: MenuItem) => void;
+  /**
+   * Open the configurator for an item, optionally on a starting quantity for
+   * callers that already asked (the homepage feature block's stepper).
+   */
+  configure: (item: MenuItem, initialQuantity?: number) => void;
   /** Reopen it pre-filled for an existing cart line. */
   edit: (line: CartLine, item: MenuItem) => void;
   /**
@@ -74,9 +77,9 @@ export function ConfiguratorProvider({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(id);
   }, [justAdded]);
 
-  const configure = useCallback((item: MenuItem) => {
+  const configure = useCallback((item: MenuItem, initialQuantity?: number) => {
     returnToCart.current = false;
-    setTarget({ item });
+    setTarget({ item, initialQuantity });
   }, []);
 
   /**
@@ -162,7 +165,7 @@ export function ConfiguratorProvider({ children }: { children: ReactNode }) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 24, opacity: 0 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="fixed inset-x-0 z-toast border-t border-charcoal/10 bg-creamLt/95 px-4 pb-3 pt-3 shadow-[0_-8px_24px_rgba(0,0,0,0.06)] backdrop-blur"
+            className="fixed inset-x-0 z-toast border-t border-brand-brown/10 bg-brand-cream/95 px-4 pb-3 pt-3 shadow-[0_-8px_24px_rgba(0,0,0,0.06)] backdrop-blur"
             style={{
               // Sits ON TOP OF the mobile cart bar rather than over it. Padding
               // alone reserved the space, but this panel's own opaque background
@@ -178,7 +181,7 @@ export function ConfiguratorProvider({ children }: { children: ReactNode }) {
           >
             <div className="mx-auto max-w-3xl">
               <div className="flex items-center justify-between gap-3">
-                <p className="min-w-0 font-body text-sm font-semibold text-charcoal">
+                <p className="min-w-0 font-body text-sm font-semibold text-brand-brown">
                   <span aria-hidden className="mr-1.5 text-success">
                     ✓
                   </span>
@@ -187,7 +190,7 @@ export function ConfiguratorProvider({ children }: { children: ReactNode }) {
                 <button
                   type="button"
                   onClick={() => setJustAdded(null)}
-                  className="shrink-0 rounded-full px-3 py-2 font-body text-xs font-semibold uppercase tracking-wide text-charcoal/60 transition-colors duration-150 hover:text-charcoal"
+                  className="shrink-0 rounded-full px-3 py-2 font-display text-xs font-semibold uppercase tracking-wide text-brand-brown/60 transition-colors duration-150 hover:text-brand-brown"
                 >
                   Dismiss
                 </button>

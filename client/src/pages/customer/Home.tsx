@@ -1,35 +1,49 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Hero from '../../components/Hero';
+import StatementBand from '../../components/StatementBand';
+import MemoriesStrip from '../../components/MemoriesStrip';
 import MenuSection from '../../components/MenuSection';
+import Marquee from '../../components/ui/Marquee';
 
 /**
- * The shop. Hero, then the menu, then the footer — one continuous scroll.
+ * The shop. One continuous scroll, alternating cream fields and deep-red bands.
  *
  * Everything else in the ordering flow happens over this page: tapping a card
  * opens the configurator as a modal, adding opens nothing, and the cart is a
  * drawer. The only route change between landing here and paying is /checkout.
+ *
+ * The top marquee sits ABOVE the navbar in the document, so it scrolls away
+ * while the bar stays stuck to the top — see CustomerLayout.
+ *
+ * The JOLLOF feature block is gone: it sold one arbitrary item from the
+ * inherited placeholder catalogue and carried an invented five-star rating.
+ * The three-step "how it works" strip is gone too, replaced by MEMORIES.
  */
 export default function Home() {
   const { hash } = useLocation();
 
-  // `/menu` redirects to `/#menu`, and the header's Menu link uses the same
-  // anchor. Deferred a frame so the section exists before we scroll to it.
+  // `/menu` redirects to `/#menu`, and the header's links use the same anchors.
+  // Deferred a frame so the section exists before we scroll to it.
   useEffect(() => {
-    if (hash !== '#menu') return;
+    if (!hash) return;
+    const id = hash.slice(1);
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const id = requestAnimationFrame(() =>
+    const raf = requestAnimationFrame(() =>
       document
-        .getElementById('menu')
+        .getElementById(id)
         ?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
     );
-    return () => cancelAnimationFrame(id);
+    return () => cancelAnimationFrame(raf);
   }, [hash]);
 
   return (
-    <div className="bg-brick">
+    <div className="bg-brand-cream">
       <Hero />
+      <StatementBand />
+      <Marquee />
       <MenuSection />
+      <MemoriesStrip />
     </div>
   );
 }

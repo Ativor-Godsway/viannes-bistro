@@ -18,6 +18,13 @@ export interface ConfiguratorTarget {
   item: MenuItem;
   /** Present when editing an existing cart line rather than adding a new one. */
   editing?: { key: string; config: Configuration };
+  /**
+   * Quantity to open on, for callers that already asked the customer how many
+   * they wanted (the homepage feature block has its own stepper). Defaults to
+   * 1, so every existing caller is unaffected. Ignored when editing, where the
+   * line's own quantity wins.
+   */
+  initialQuantity?: number;
 }
 
 interface Props {
@@ -30,7 +37,7 @@ interface Props {
 function Delta({ amount }: { amount: number }) {
   if (!amount) return null;
   return (
-    <span className="shrink-0 font-body text-xs font-semibold tabular-nums text-charcoal/60">
+    <span className="shrink-0 font-body text-xs font-semibold tabular-nums text-brand-brown/60">
       {amount > 0 ? '+' : '−'}
       {GHS(Math.abs(amount))}
     </span>
@@ -81,13 +88,14 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
     } else {
       setVariantId(resolveVariant(item, null)?.id ?? null);
       setSelections(Object.fromEntries((item.modifierGroups ?? []).map((g) => [g.id, []])));
-      setQuantity(1);
+      // Clamped: the caller's stepper is UI, not a trusted source.
+      setQuantity(Math.max(1, Math.min(99, Math.round(target?.initialQuantity ?? 1))));
       setInstructions('');
     }
     setFlagged(null);
     setImageFailed(false);
     groupRefs.current = {};
-  }, [item, editing]);
+  }, [item, editing, target?.initialQuantity]);
 
   /**
    * Escape closes; the page behind is pinned while the sheet is open and put
@@ -195,7 +203,7 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
     <AnimatePresence>
       {item && (
         <motion.div
-          className="fixed inset-0 z-configurator flex items-end justify-center bg-charcoal/60 sm:items-center sm:p-4"
+          className="fixed inset-0 z-configurator flex items-end justify-center bg-brand-ink/60 sm:items-center sm:p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -206,7 +214,7 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
             role="dialog"
             aria-modal="true"
             aria-label={`Configure ${item.name}`}
-            className="flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl bg-creamLt sm:max-h-[88vh] sm:rounded-3xl"
+            className="flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-card bg-brand-cream sm:max-h-[88vh] sm:rounded-card"
             initial={{ y: '4%', opacity: 0.6 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: '6%', opacity: 0 }}
@@ -216,7 +224,7 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
             <div ref={scrollRef} className="flex-1 overflow-y-auto">
               {/* Hero image. 640 is resolved against the generated manifest, so
                   it can never request a width the pipeline did not emit. */}
-              <div className="relative aspect-[16/10] bg-cream">
+              <div className="relative aspect-[16/10] bg-brand-creamMid">
                 {heroSrc && !imageFailed ? (
                   <img
                     src={heroSrc}
@@ -236,7 +244,7 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
                   onClick={onClose}
                   aria-label="Close"
                   data-autofocus
-                  className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-white/90 text-xl text-charcoal shadow-sm transition-transform duration-150 active:scale-95"
+                  className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-brand-paper/90 text-xl text-brand-brown shadow-sm transition-transform duration-150 active:scale-95"
                 >
                   ×
                 </button>
@@ -244,13 +252,13 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
 
               <div className="space-y-6 px-5 pb-6 pt-5">
                 <header>
-                  <h2 className="font-poster text-2xl uppercase leading-tight text-charcoal">
+                  <h2 className="font-poster text-2xl uppercase leading-tight text-brand-redDeep">
                     {item.name}
                   </h2>
                   {item.description && (
-                    <p className="mt-1 font-body text-sm text-charcoal/70">{item.description}</p>
+                    <p className="mt-1 font-body text-sm text-brand-brown/70">{item.description}</p>
                   )}
-                  <p className="mt-2 font-body text-xs text-charcoal/50">
+                  <p className="mt-2 font-body text-xs text-brand-brown/50">
                     ⏱ ~{item.preparationTime} min prep
                   </p>
                 </header>
@@ -268,8 +276,8 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
                           onClick={() => setVariantId(v.id)}
                           className={`min-h-[44px] rounded-xl border px-3 py-2 text-left font-body text-sm transition-colors duration-150 ${
                             variantId === v.id
-                              ? 'border-brick bg-brick text-cream'
-                              : 'border-charcoal/15 bg-white text-charcoal hover:border-brick/40'
+                              ? 'border-brand-redDeep bg-brand-redDeep text-brand-cream'
+                              : 'border-brand-brown/65 bg-brand-paper text-brand-brown hover:border-brand-redDeep'
                           }`}
                         >
                           <span className="block font-semibold">{v.name}</span>
@@ -296,7 +304,7 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
                         groupRefs.current[group.id] = el;
                       }}
                       className={`rounded-2xl transition-colors duration-150 ${
-                        isFlagged ? 'bg-brick/10 p-3 ring-1 ring-brick' : ''
+                        isFlagged ? 'bg-brand-red/10 p-3 ring-1 ring-brand-red' : ''
                       }`}
                     >
                       <SectionHead
@@ -308,7 +316,7 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
                             : undefined
                         }
                       />
-                      <ul className="mt-2 divide-y divide-charcoal/10 overflow-hidden rounded-xl bg-white">
+                      <ul className="mt-2 divide-y divide-brand-brown/20 overflow-hidden rounded-xl bg-brand-paper">
                         {group.options.map((option) => {
                           const isOn = chosen.includes(option.id);
                           const locked = !option.available || (full && !isOn);
@@ -316,7 +324,7 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
                             <li key={option.id}>
                               <label
                                 className={`flex min-h-[48px] cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors duration-150 ${
-                                  locked ? 'cursor-not-allowed opacity-40' : 'hover:bg-cream/60'
+                                  locked ? 'cursor-not-allowed opacity-40' : 'hover:bg-brand-creamMid/60'
                                 }`}
                               >
                                 <input
@@ -327,10 +335,10 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
                                   onChange={() => toggle(group, option.id)}
                                   className="h-4 w-4 shrink-0 accent-brick"
                                 />
-                                <span className="min-w-0 flex-1 font-body text-sm text-charcoal">
+                                <span className="min-w-0 flex-1 font-body text-sm text-brand-brown">
                                   {option.name}
                                   {!option.available && (
-                                    <span className="ml-2 text-xs uppercase tracking-wide text-brick">
+                                    <span className="ml-2 text-xs uppercase tracking-wide text-brand-redDeep">
                                       sold out
                                     </span>
                                   )}
@@ -354,7 +362,7 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
                     maxLength={300}
                     rows={2}
                     placeholder="No onions, extra napkins…"
-                    className="mt-2 w-full resize-none rounded-xl border border-charcoal/15 bg-white px-4 py-3 font-body text-sm text-charcoal outline-none transition-colors duration-150 focus:border-brick"
+                    className="mt-2 w-full resize-none rounded-xl border border-brand-brown/65 bg-brand-paper px-4 py-3 font-body text-sm text-brand-brown outline-none transition-colors duration-150 focus:border-brand-redDeep"
                   />
                 </section>
               </div>
@@ -362,15 +370,15 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
 
             {/* Sticky footer — quantity and the live total. */}
             <footer
-              className="flex items-center gap-3 border-t border-charcoal/10 bg-cream px-5 pt-4"
+              className="flex items-center gap-3 border-t border-brand-brown/20 bg-brand-creamMid px-5 pt-4"
               style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))' }}
             >
-              <div className="flex items-center gap-1 rounded-full border border-charcoal/15 bg-white">
+              <div className="flex items-center gap-1 rounded-full border border-brand-brown/65 bg-brand-paper">
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   aria-label="Decrease quantity"
-                  className="grid h-11 w-11 place-items-center rounded-full text-lg leading-none text-charcoal transition-transform duration-150 active:scale-95"
+                  className="grid h-11 w-11 place-items-center rounded-full text-lg leading-none text-brand-brown transition-transform duration-150 active:scale-95"
                 >
                   −
                 </button>
@@ -381,7 +389,7 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
                   type="button"
                   onClick={() => setQuantity((q) => Math.min(20, q + 1))}
                   aria-label="Increase quantity"
-                  className="grid h-11 w-11 place-items-center rounded-full text-lg leading-none text-charcoal transition-transform duration-150 active:scale-95"
+                  className="grid h-11 w-11 place-items-center rounded-full text-lg leading-none text-brand-brown transition-transform duration-150 active:scale-95"
                 >
                   +
                 </button>
@@ -394,8 +402,8 @@ export default function ItemConfigurator({ target, onClose, onSubmit }: Props) {
                 aria-disabled={!!unmet}
                 className={`h-12 flex-1 rounded-full font-body text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-40 ${
                   unmet
-                    ? 'bg-charcoal/20 text-charcoal/60'
-                    : 'bg-brick text-cream active:scale-[0.97]'
+                    ? 'bg-brand-ink/20 text-brand-brown/60'
+                    : 'bg-brand-red text-brand-cream active:scale-[0.97]'
                 }`}
               >
                 {price == null
@@ -423,8 +431,8 @@ function SectionHead({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-3">
-      <h3 className="font-body text-sm font-bold uppercase tracking-wide text-charcoal">{title}</h3>
-      <span className={`font-body text-xs ${error ? 'font-semibold text-brick' : 'text-charcoal/50'}`}>
+      <h3 className="font-body text-sm font-bold uppercase tracking-wide text-brand-brown">{title}</h3>
+      <span className={`font-body text-xs ${error ? 'font-semibold text-brand-redDeep' : 'text-brand-brown/50'}`}>
         {error ?? hint}
       </span>
     </div>

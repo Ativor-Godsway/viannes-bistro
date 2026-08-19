@@ -2,32 +2,41 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%94%3C/text%3E%3C/svg%3E" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Besties — Campus Fast Food, Delivered</title>
+    <meta name="theme-color" content="#911A1C" />
+    <title>Viannes Bistro — A Delicious Journey</title>
+
+    <!-- Fork-and-spoon mark on a cream disc with an orange ring. -->
+    <link rel="icon" href="/brand/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/brand/icon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/brand/icon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/brand/icon-180.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Hero object: largest paint on the page, and the entrance animation waits
-         on it. imagesrcset/imagesizes mirror the <img> exactly so the preload
-         and the element resolve to the same candidate. -->
+    <!-- The hero photograph is preloaded: it is the largest above-the-fold
+         paint on the shop. imagesrcset/imagesizes MUST mirror the <img> in
+         components/Hero.jsx exactly, or the browser preloads one candidate and
+         then downloads a different one. Widths come from the pipeline manifest
+         (src/data/photoManifest.json) — this shot caps at 1007px. -->
     <link
       rel="preload"
       as="image"
       type="image/webp"
-      fetchpriority="high"
-      imagesrcset="/menu/opt/pizza-640.webp 640w, /menu/opt/pizza-800.webp 800w"
-      imagesizes="min(85vw, 620px)"
+      href="/photos/opt/club-sandwich-800.webp"
+      imagesrcset="/photos/opt/club-sandwich-480.webp 480w, /photos/opt/club-sandwich-800.webp 800w, /photos/opt/club-sandwich-1007.webp 1007w"
+      imagesizes="(max-width: 767px) 90vw, 530px"
     />
-    <!-- Display face is preloaded: it carries the hero entrance, so it must not
-         arrive after first paint. Everything else loads normally with swap. -->
+    <!-- Only the display face is preloaded: it sets the hero headline, which is
+         above the fold. Poppins and Inter load normally with swap. -->
     <link
       rel="preload"
       as="style"
-      href="https://fonts.googleapis.com/css2?family=Anton&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap"
     />
-    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
   </head>

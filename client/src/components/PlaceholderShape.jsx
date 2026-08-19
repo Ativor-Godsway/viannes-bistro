@@ -1,5 +1,4 @@
-import { useEffect, useId, useRef } from 'react';
-import { gsap } from 'gsap';
+import { useId, useRef } from 'react';
 
 /**
  * Animated stand-in for a food photograph. Zero raster assets.
@@ -12,17 +11,19 @@ import { gsap } from 'gsap';
  *
  * Props
  *  - variant: 'disc' | 'blob' | 'arch' | 'squircle' | 'ring'
- *  - palette: 'cream' | 'red' | 'charcoal' | 'gold'
+ *  - palette: 'cream' | 'red' | 'ink' | 'orange'
  *  - size:    CSS length applied to width+height (optional; className can win)
  *  - speed:   seconds per idle cycle — higher is slower/calmer
  *  - seed:    de-syncs instances so nothing pulses in unison
  */
 
+// Kept in step with the brand scale in tailwind.config.js. These are raw hexes
+// because they are painted into SVG fills, not applied as classes.
 const PALETTES = {
-  cream: { a: '#F7EFE2', b: '#EBD9BC' },
-  red: { a: '#C2261C', b: '#9E1B13' },
-  charcoal: { a: '#2A2724', b: '#1A1A1A' },
-  gold: { a: '#E0A72C', b: '#C2261C' },
+  cream: { a: '#F4F3DC', b: '#E0DEB8' },
+  red: { a: '#E3231B', b: '#911A1C' },
+  ink: { a: '#3A2418', b: '#1E0E0E' },
+  orange: { a: '#F86F0F', b: '#E3231B' },
 };
 
 // Cubic circle-approximation constant. Blob morphing tweens four radii, which
@@ -65,63 +66,19 @@ export default function PlaceholderShape({
   const gid = useId().replace(/:/g, '');
   const { a, b } = PALETTES[palette] || PALETTES.red;
 
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-    // Reduced motion: shapes hold a single static state, no idle loop at all.
-    // `idle={false}` opts out too — used when an ancestor already animates the
-    // shape (the hero, where the photo and its fallback spin as one object).
-    if (!idle || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const delay = (seed % 7) * 0.55; // de-sync instances
-    const ctx = gsap.context(() => {
-      // Idle motion is transform-only, and always running — the page must never
-      // look frozen when the user stops scrolling.
-      if (variant === 'ring') {
-        gsap.to(root, { rotation: 360, duration: speed * 2.4, repeat: -1, ease: 'none', delay });
-      } else if (variant === 'disc') {
-        gsap.to(root, { rotation: 360, duration: speed * 3, repeat: -1, ease: 'none', delay });
-        gsap.to(root, {
-          scale: 1.02,
-          duration: speed / 2,
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-          delay,
-        });
-      } else {
-        gsap.to(root, {
-          y: -8,
-          rotation: variant === 'blob' ? 4 : 2,
-          scale: 1.02,
-          duration: speed / 2,
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-          delay,
-        });
-      }
-
-      // Blob: genuine SVG path morph between organic states on a slow loop.
-      if (variant === 'blob' && pathRef.current) {
-        const el = pathRef.current;
-        const proxy = { r: [...BLOB_STATES[0]] };
-        const tl = gsap.timeline({ repeat: -1, delay });
-        BLOB_STATES.slice(1)
-          .concat([BLOB_STATES[0]])
-          .forEach((target) => {
-            tl.to(proxy.r, {
-              endArray: target,
-              duration: speed / 3,
-              ease: 'sine.inOut',
-              onUpdate: () => el.setAttribute('d', blobPath(proxy.r)),
-            });
-          });
-      }
-    }, rootRef);
-
-    return () => ctx.revert();
-  }, [variant, speed, seed, idle]);
+  // Idle motion is CSS keyframes (see index.css), not a JS tween: this is
+  // scaffolding that disappears once real photography lands, and it was the
+  // last thing in the app pulling in gsap.
+  //
+  // `idle={false}` opts out — used when an ancestor already animates the shape.
+  // Reduced motion is handled in the stylesheet, where the keyframes are
+  // switched off entirely rather than merely shortened.
+  const delay = `${((seed % 7) * 0.55).toFixed(2)}s`;
+  const animate = idle
+    ? variant === 'ring' || variant === 'disc'
+      ? 'ph-spin'
+      : 'ph-float'
+    : '';
 
   const boxStyle = { ...(size ? { width: size, height: size } : null), ...style };
   const fill = `url(#pg-${gid})`;
@@ -130,13 +87,20 @@ export default function PlaceholderShape({
     <div
       ref={rootRef}
       aria-hidden
-      className={`pointer-events-none relative ${className}`}
-      style={boxStyle}
+      className={`pointer-events-none relative ${animate} ${className}`}
+      style={{
+        ...boxStyle,
+        '--ph-dur': `${variant === 'ring' ? speed * 2.4 : variant === 'disc' ? speed * 3 : speed / 2}s`,
+        '--ph-delay': delay,
+      }}
     >
       <svg
         viewBox="0 0 100 100"
         preserveAspectRatio={variant === 'disc' || variant === 'ring' ? 'xMidYMid meet' : 'none'}
-        className="absolute inset-0 h-full w-full overflow-visible"
+        className={`absolute inset-0 h-full w-full overflow-visible ${
+          idle && variant === 'disc' ? 'ph-pulse' : ''
+        }`}
+        style={{ '--ph-dur': `${speed / 2}s`, '--ph-delay': delay }}
       >
         <defs>
           <linearGradient id={`pg-${gid}`} x1="0" y1="0" x2="1" y2="1">

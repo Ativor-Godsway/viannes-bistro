@@ -6,7 +6,7 @@ import { STATUS_LABEL } from '../../lib/format';
  * Admin primitives.
  *
  * The admin is a formal tool: one sans family, a tight scale, muted grays for
- * secondary text, near-black for primary, and the Besties red reserved for
+ * secondary text, near-black for primary, and the Viannes Bistro red reserved for
  * primary actions, active states and destructive ones. No gradients, no text
  * shadows, and no transition longer than 150ms anywhere in here.
  */

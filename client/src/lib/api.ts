@@ -38,7 +38,7 @@ function normaliseApiUrl(raw: string | undefined): string {
 
 export const API_URL = normaliseApiUrl(import.meta.env.VITE_API_URL);
 
-export const TOKEN_KEY = 'besties_token';
+export const TOKEN_KEY = 'viannes_token';
 
 export const getToken = (): string | null => {
   try {

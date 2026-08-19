@@ -1,164 +1,73 @@
-import { useLayoutEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import PlaceholderShape from './PlaceholderShape';
-import FoodImage from './FoodImage';
-import { BEAT2 } from '../lib/choreo';
+import PhotoSlot from './ui/PhotoSlot';
+import PillButton from './ui/PillButton';
+import StickerBadge from './ui/StickerBadge';
+import Wordmark from './ui/Wordmark';
 
 /**
- * Poster hero on an explicit 12-column grid.
+ * The hero: cream field, logo lockup, headline, one photograph.
  *
- *   cols 1–5  top     eyebrow
- *   cols 1–8  middle  display headline
- *   cols 7–12 —       hero object, cropped off the top AND right edges
- *   cols 1–6  bottom  body copy
- *   cols 7–12 bottom  CTA + utility line, right-aligned
- *   col  12   full    vertical rail
+ * ┌─ WHY THIS IS A TWO-COLUMN SPLIT AND NOT A FULL-BLEED BAND ───────────────┐
+ * │ The original layout put a 16:9 band under the copy. Not one of the actual │
+ * │ photographs is landscape — the widest is 1.3:1 and the rest are portrait  │
+ * │ — so a 16:9 frame would have cover-cropped the plate down to a letterbox  │
+ * │ sliver of table. The split gives the photo a portrait frame at close to   │
+ * │ its own ratio, and gives the copy a column instead of a full-width slab.  │
+ * └──────────────────────────────────────────────────────────────────────────┘
  *
- * There is exactly ONE motion effect here: the pizza slides off the screen as
- * you scroll past. Everything else — the headline, the eyebrow, the CTA, the
- * red field — is completely static, on load and on scroll. No entrance
- * timeline, no rotating word, no colour or brightness animation, no parallax
- * on the type. Under `prefers-reduced-motion` even the pizza holds still.
+ * Deliberately static. Nothing here animates except the sticker, which stops
+ * entirely under `prefers-reduced-motion` — see StickerBadge.
  */
 export default function Hero() {
-  const root = useRef(null);
-  const heroImgRef = useRef(null);
-
-  useLayoutEffect(() => {
-    const q = gsap.utils.selector(root);
-    const mm = gsap.matchMedia(root);
-
-    mm.add(
-      {
-        isMobile: '(prefers-reduced-motion: no-preference) and (max-width: 767px)',
-        isDesktop: '(prefers-reduced-motion: no-preference) and (min-width: 768px)',
-      },
-      (ctx) => {
-        const { isMobile } = ctx.conditions;
-        const object = q('.hero-object-wrap');
-        if (!object.length) return;
-
-        // The pizza travels up and off the top-right as the hero scrolls out.
-        // No pin (it fights iOS momentum scrolling) and no rotation — a single
-        // scrubbed translation, so the object is perfectly still whenever the
-        // user is.
-        gsap.to(object, {
-          yPercent: isMobile ? BEAT2.disc.m : BEAT2.disc.y,
-          xPercent: 35,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: root.current,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: BEAT2.scrub,
-            invalidateOnRefresh: true,
-          },
-        });
-      }
-    );
-
-    return () => mm.revert();
-  }, []);
-
   return (
-    <section
-      id="hero"
-      ref={root}
-      className="relative isolate min-h-[100dvh] w-full overflow-hidden bg-brick"
-    >
-      {/* LAYER 0 — flat red field. No gradient, no texture, no brightness tween. */}
-      <div className="absolute inset-0 z-0 bg-brick" />
+    <section className="bg-brand-cream px-5 pb-14 pt-12 sm:px-8 sm:pb-20 sm:pt-16">
+      <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2 md:gap-14">
+        {/* ── Left: the copy column. */}
+        <div className="min-w-0">
+          {/* The full lockup, on cream — the one surface it is cleared for. */}
+          <Wordmark
+            variant="image"
+            priority
+            sizes="(max-width: 640px) 200px, 260px"
+            className="block h-16 w-auto sm:h-20"
+          />
 
-      {/* LAYER 1 — ambient atmosphere. Almost subliminal: ~5% contrast. */}
-      <div className="absolute inset-0 z-[1] opacity-[0.35]">
-        <PlaceholderShape
-          variant="blob"
-          palette="red"
-          seed={1}
-          speed={13}
-          className="absolute -left-[22vw] top-[20vh] h-[70vw] w-[70vw]"
-        />
-        <PlaceholderShape
-          variant="blob"
-          palette="red"
-          seed={4}
-          speed={11}
-          className="absolute -right-[20vw] bottom-[-6vh] h-[74vw] w-[74vw]"
-        />
-      </div>
+          <p className="mt-8 font-display text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-brand-brown">
+            Sandwiches · Hot plates · Smoothies
+          </p>
 
-      {/* LAYER 5 — right rail. Gives the right edge a defined boundary.
-          Hidden under 480px, where it only eats width. */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-[5] hidden w-7 overflow-hidden min-[480px]:block">
-        <div
-          aria-hidden
-          className="flex h-full select-none items-center justify-center whitespace-nowrap font-body text-[0.58rem] uppercase tracking-[0.35em] text-cream/35"
-          style={{ writingMode: 'vertical-rl' }}
-        >
-          {'DELIVERY · PICKUP · LEGON CAMPUS · '.repeat(6)}
-        </div>
-      </div>
-
-      {/* LAYER 20 — hero object, cropped off BOTH the top and the right edge, so
-          it reads as a print crop rather than a sticker placed on the field.
-          This is the one element that moves. */}
-      <div className="hero-object-wrap pointer-events-none absolute right-0 top-0 z-20 translate-x-[22%] -translate-y-[26%] will-change-transform sm:translate-x-[15%] sm:-translate-y-[24%]">
-        <FoodImage
-          file="pizza"
-          alt="Wood-fired pizza, whole"
-          priority
-          sizes="min(88vw, 620px)"
-          seed={2}
-          fallbackIdle={false}
-          imgRef={heroImgRef}
-          className="h-[min(88vw,620px)] w-[min(88vw,620px)]"
-        />
-      </div>
-
-      {/* CONTENT GRID — three rows: top / middle / bottom, 12 columns. */}
-      <div className="relative z-10 grid min-h-[100dvh] grid-cols-12 grid-rows-[auto_1fr_auto] gap-y-5 px-5 pb-7 pt-[15vh] sm:px-10 sm:pb-10 sm:pt-[17vh]">
-        {/* Eyebrow — cols 1–5, top. Static. */}
-        <div className="col-span-5 row-start-1 self-start">
-          <span className="block font-body text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-cream sm:text-xs">
-            Besties
-          </span>
-          <span className="mt-1.5 block font-poster text-[0.98rem] uppercase tracking-tight text-cream sm:text-[1.2rem]">
-            Fresh. Fast. Fired up.
-          </span>
-        </div>
-
-        {/* Headline — cols 1–8, middle. Completely static. */}
-        <div className="col-span-8 row-start-2 self-center">
-          <h1 className="font-poster text-[clamp(3.25rem,15vw,8.5rem)] uppercase leading-[0.82] tracking-[-0.01em] text-cream">
-            <span className="block">CAMPUS</span>
-            <span className="block">CRAVINGS</span>
+          <h1 className="mt-4 font-poster text-[clamp(2.5rem,9vw,5.5rem)] uppercase leading-[0.88] tracking-tight text-brand-redDeep">
+            <span className="block">Made Fresh</span>
+            <span className="block">All Day</span>
           </h1>
+
+          <p className="mt-6 max-w-md font-body text-base leading-relaxed text-brand-brown">
+            Blended, grilled and plated to order — then carried to you across Legon. Morning,
+            afternoon or late.
+          </p>
+
+          <PillButton as="a" href="#menu" variant="solid" className="mt-7">
+            See the menu
+          </PillButton>
         </div>
 
-        {/* Body copy — bottom left. Hard-capped at three lines. */}
-        <p className="col-span-7 row-start-3 self-end overflow-hidden text-justify font-body text-[0.7rem] leading-relaxed text-cream [-webkit-box-orient:vertical] [-webkit-line-clamp:3] [display:-webkit-box] sm:col-span-5 sm:text-sm">
-          Ghanaian classics, cooked to order and carried across campus hot.
-        </p>
-
-        {/* CTA + utility — bottom right, anchoring the right column. Static. */}
-        <div className="col-span-5 col-start-8 row-start-3 flex flex-col items-end gap-2 self-end sm:col-span-4 sm:col-start-9">
-          <a
-            href="#menu"
-            className="inline-flex min-h-[44px] items-center justify-center rounded-full border-[1.5px] border-cream px-5 py-2.5 font-body text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream transition-colors duration-150 hover:bg-cream hover:text-brick focus-visible:bg-cream focus-visible:text-brick active:bg-cream active:text-brick sm:px-7 sm:text-xs"
-          >
-            Order now
-          </a>
-          <span className="text-right font-body text-[0.6rem] tracking-wide text-cream/85 sm:text-xs">
-            0555 000 000 · @bestiesug
-          </span>
+        {/* ── Right: the photograph, at close to its own portrait ratio. */}
+        <div className="relative min-w-0">
+          <PhotoSlot
+            photo="club-sandwich"
+            label="Hero · the plate, on the bench"
+            priority
+            // Roughly half of the 1152px container on desktop, full bleed below it.
+            sizes="(max-width: 767px) 90vw, 530px"
+            className="aspect-[4/5] w-full rounded-hero"
+          />
+          {/*
+            Straddles the lower-left corner. The negative inset only kicks in at
+            `sm`, where the page gutter is 32px and can absorb it — at 320px a
+            -24px offset would push the sticker past the viewport edge and give
+            the whole page a horizontal scrollbar.
+          */}
+          <StickerBadge className="absolute -bottom-7 left-3 h-24 w-24 sm:-left-6 sm:-bottom-8 sm:h-28 sm:w-28" />
         </div>
-      </div>
-
-      {/* LAYER 30 — script overlay, on top of everything, off-grid. Static. */}
-      <div className="pointer-events-none absolute inset-x-0 top-[44vh] z-30 flex justify-start pl-[10vw] sm:pl-[13vw]">
-        <span className="block -rotate-6 font-script text-[clamp(3rem,13vw,7rem)] font-bold leading-none text-charcoal">
-          fresh
-        </span>
       </div>
     </section>
   );

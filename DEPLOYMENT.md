@@ -1,4 +1,4 @@
-# Deploying Besties
+# Deploying Viannes Bistro
 
 Client on **Vercel**, API on **Render**, database on **MongoDB Atlas**, images on
 **Cloudinary**, payments through **Paystack**.
@@ -21,18 +21,18 @@ webhook needs the API's URL:
 | `NODE_ENV` | no | `production` | Render sets this automatically. |
 | `PORT` | no | *(leave unset)* | Render injects it. |
 | `TRUST_PROXY` | no | `1` | **Required.** Render terminates TLS at one proxy. Without it the rate limiter buckets every visitor into one IP and `Secure` cookies aren't recognised. |
-| `MONGO_URI` | **yes** | `mongodb+srv://user:pass@cluster.mongodb.net/besties` | No fallback — a missing value stops the boot. Use a **separate production database**. |
+| `MONGO_URI` | **yes** | `mongodb+srv://user:pass@cluster.mongodb.net/viannes` | No fallback — a missing value stops the boot. Use a **separate production database**. |
 | `JWT_SECRET` | **yes** | *(48 random bytes)* | Minimum 32 chars, no default. `openssl rand -base64 48` |
 | `JWT_EXPIRES_IN` | no | `7d` | Also sets the session cookie's lifetime. |
-| `CLIENT_ORIGINS` | no | `https://besties.vercel.app` | Comma-separated, absolute, **no trailing slash**. Drives CORS and Socket.IO. A *set* — order is not meaningful. |
-| `PUBLIC_APP_URL` | no | `https://besties.vercel.app` | **Required.** Where the browser app is served from; builds the Paystack redirect `<PUBLIC_APP_URL>/payment/callback`. **Set this wrong and paying customers are redirected to the wrong site after paying.** Must be `https` and non-localhost in production. Warns at boot if it isn't also in `CLIENT_ORIGINS`. |
-| `CLIENT_ORIGIN_REGEX` | no | `^https://besties-[a-z0-9-]+\.vercel\.app$` | Lets Vercel **preview** deploys through — without it every preview URL is CORS-blocked. **Anchor both ends** (see below). |
+| `CLIENT_ORIGINS` | no | `https://viannes.vercel.app` | Comma-separated, absolute, **no trailing slash**. Drives CORS and Socket.IO. A *set* — order is not meaningful. |
+| `PUBLIC_APP_URL` | no | `https://viannes.vercel.app` | **Required.** Where the browser app is served from; builds the Paystack redirect `<PUBLIC_APP_URL>/payment/callback`. **Set this wrong and paying customers are redirected to the wrong site after paying.** Must be `https` and non-localhost in production. Warns at boot if it isn't also in `CLIENT_ORIGINS`. |
+| `CLIENT_ORIGIN_REGEX` | no | `^https://viannes-[a-z0-9-]+\.vercel\.app$` | Lets Vercel **preview** deploys through — without it every preview URL is CORS-blocked. **Anchor both ends** (see below). |
 | `SYNC_CATALOGUE_ON_BOOT` | no | `true` | **Safe to leave on.** Upsert only — it never deletes. Items dropped from `catalogue.ts` are hidden, not destroyed. |
 | `DELIVERY_FEE_GHS` | no | `5` | Server-authoritative. Any `deliveryFee` in a request body is ignored. |
 | `PAYSTACK_MODE` | no | `live` | Live is opt-in. A live key with `test` (or vice versa) is rejected at boot. |
 | `PAYSTACK_SECRET_KEY` | **yes** | `sk_live_…` | Required in production. **Never** goes near the client. |
 | `PAYSTACK_WEBHOOK_SECRET` | **yes** | *(usually blank)* | Only if you rotate it separately; defaults to the secret key, which is what Paystack signs with. |
-| `CLOUDINARY_CLOUD_NAME` | no | `besties` | All three or none. |
+| `CLOUDINARY_CLOUD_NAME` | no | `viannes` | All three or none. |
 | `CLOUDINARY_API_KEY` | **yes** | `123456789012345` | |
 | `CLOUDINARY_API_SECRET` | **yes** | `abc…` | |
 | `SEED_ADMIN_EMAIL` | no | `admin@yourdomain.com` | Only for the destructive `npm run seed`. |
@@ -44,8 +44,8 @@ Everything below is **compiled into public JavaScript**. Never put a secret here
 
 | Variable | Secret | Example | Notes |
 |---|---|---|---|
-| `VITE_API_URL` | no | `https://besties-api.onrender.com/api` | **Include the `/api` suffix.** |
-| `VITE_SOCKET_URL` | no | `https://besties-api.onrender.com` | Origin only, **no path**. |
+| `VITE_API_URL` | no | `https://viannes-api.onrender.com/api` | **Include the `/api` suffix.** |
+| `VITE_SOCKET_URL` | no | `https://viannes-api.onrender.com` | Origin only, **no path**. |
 
 Leave both unset locally — they fall back to relative paths that the Vite dev
 proxy forwards, so local development is unchanged.
@@ -68,7 +68,7 @@ proxy forwards, so local development is unchanged.
 
 1. Sign up, then Console → **Dashboard** → *API Keys*.
 2. Copy *Cloud name*, *API Key*, *API Secret* into the three Render variables.
-3. Uploads land in the `besties/menu` folder, capped at 1600×1600 and 5MB.
+3. Uploads land in the `viannes/menu` folder, capped at 1600×1600 and 5MB.
 
 Without these the app runs normally; admin image upload returns
 `503 Image uploads are not configured`.
@@ -120,12 +120,12 @@ Each Vercel preview gets its own hostname, so a fixed `CLIENT_ORIGINS` list
 cannot cover them. Set on Render:
 
 ```
-CLIENT_ORIGIN_REGEX=^https://besties-[a-z0-9-]+\.vercel\.app$
+CLIENT_ORIGIN_REGEX=^https://viannes-[a-z0-9-]+\.vercel\.app$
 ```
 
 **Anchor it at both ends.** `vercel.app` is a shared domain that anyone can
 deploy to. Without the leading `^` and trailing `$`, the pattern would also
-match `https://evil.vercel.app` (or `https://attacker.com/#besties-x.vercel.app`),
+match `https://evil.vercel.app` (or `https://attacker.com/#viannes-x.vercel.app`),
 handing a stranger's deployment an allowed path to this API. The anchors are
 the whole security boundary here.
 
@@ -188,8 +188,8 @@ Test card (test mode only): `4084 0840 8408 4081`, any future expiry, any CVV.
 ## 7. Post-deploy checks
 
 ```bash
-API=https://besties-api.onrender.com
-APP=https://besties.vercel.app
+API=https://viannes-api.onrender.com
+APP=https://viannes.vercel.app
 
 curl -s $API/api/health                                  # {"ok":true}
 curl -s $API/api/menu | head -c 200                      # six products, priced
@@ -199,7 +199,7 @@ curl -sD- -o /dev/null -H "Origin: $APP" $API/api/menu | grep -i access-control 
 ```
 
 Then, in a browser: sign in at `/admin/login`, confirm `document.cookie` shows
-**only** `besties_csrf` (the session cookie is httpOnly and must not appear),
+**only** `viannes_csrf` (the session cookie is httpOnly and must not appear),
 and place one real low-value order to confirm the webhook fires.
 
 ## 8. First admin account

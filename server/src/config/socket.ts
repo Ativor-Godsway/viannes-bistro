@@ -66,7 +66,7 @@ export function initSocket(httpServer: HttpServer): Server {
     // Per-order rooms stay open to guests: the order id is the capability, and
     // a guest who just checked out has no session to prove anything with.
     socket.on('order:subscribe', (orderId: unknown) => {
-      if (typeof orderId === 'string' && /^BST-[A-Z0-9]{6}$/.test(orderId)) {
+      if (typeof orderId === 'string' && /^VB-[A-Z0-9]{6}$/.test(orderId)) {
         socket.join(`order:${orderId}`);
       }
     });

@@ -3,7 +3,7 @@
  *
  * Every required variable is checked ONCE, at boot, and the process exits with
  * a list of what is missing rather than starting up and failing later on the
- * first request. The old code fell back to `mongodb://127.0.0.1:27017/besties`
+ * first request. The old code fell back to `mongodb://127.0.0.1:27017/viannes`
  * when MONGO_URI was unset, which in production means a server that boots
  * cleanly, connects to nothing, and reports itself healthy.
  *
@@ -53,7 +53,7 @@ const schema = z.object({
    */
   PUBLIC_APP_URL: z
     .string()
-    .min(1, 'required — where the browser app is served from, e.g. https://besties.vercel.app')
+    .min(1, 'required — where the browser app is served from, e.g. https://viannes.vercel.app')
     .url('must be an absolute URL including the scheme')
     .transform((u) => u.replace(/\/+$/, '')),
 

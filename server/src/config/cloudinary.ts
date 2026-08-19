@@ -36,7 +36,7 @@ export function uploadImage(buffer: Buffer, filename: string): Promise<UploadedI
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
-        folder: 'besties/menu',
+        folder: 'viannes/menu',
         resource_type: 'image',
         public_id: `${Date.now()}-${filename.replace(/\.[^.]+$/, '').replace(/[^\w-]/g, '_')}`,
         overwrite: false,

@@ -3,7 +3,7 @@
    ║   ⚠️  PRICES IN THIS FILE ARE PROVISIONAL PLACEHOLDERS  ⚠️                ║
    ║                                                                          ║
    ║   They were invented to make the ordering flow testable. They are NOT    ║
-   ║   real Besties prices. REPLACE EVERY `price` AND `priceDelta` BELOW      ║
+   ║   real Viannes Bistro prices. REPLACE EVERY `price` AND `priceDelta` BELOW      ║
    ║   BEFORE TAKING REAL MONEY FROM ANYONE.                                  ║
    ║                                                                          ║
    ║   This applies to EVERY number below: the six base prices (each tagged   ║
@@ -13,7 +13,7 @@
    ╚══════════════════════════════════════════════════════════════════════════╝ */
 
 /**
- * THE CATALOGUE — the single source of truth for what Besties sells.
+ * THE CATALOGUE — the single source of truth for what Viannes Bistro sells.
  *
  * This file is the menu. Edit it and restart the server; the boot-time
  * catalogue sync (utils/syncCatalogue.ts) upserts it into MongoDB, and the

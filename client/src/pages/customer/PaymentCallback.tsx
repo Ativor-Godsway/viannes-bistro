@@ -53,18 +53,18 @@ export default function PaymentCallback() {
   }, [reference, clearCart]);
 
   return (
-    <div className="mx-auto grid min-h-[70vh] max-w-md place-items-center px-5 pb-20 pt-28 text-center">
+    <div className="mx-auto grid min-h-[70vh] max-w-md place-items-center px-5 pb-20 pt-12 text-center">
       <div>
         {phase === 'checking' && (
           <>
             <span
               aria-hidden
-              className="mx-auto block h-10 w-10 animate-spin rounded-full border-[3px] border-charcoal/15 border-t-brick"
+              className="mx-auto block h-10 w-10 animate-spin rounded-full border-[3px] border-brand-brown/15 border-t-brand-red"
             />
-            <h1 className="mt-5 font-poster text-2xl uppercase text-charcoal">
+            <h1 className="mt-5 font-poster text-2xl uppercase text-brand-redDeep">
               Confirming payment
             </h1>
-            <p className="mt-2 font-body text-sm text-charcoal/70">
+            <p className="mt-2 font-body text-sm text-brand-brown/70">
               Checking with Paystack. This takes a second — don't close the page.
             </p>
           </>
@@ -75,14 +75,14 @@ export default function PaymentCallback() {
             <span aria-hidden className="text-5xl">
               ✅
             </span>
-            <h1 className="mt-4 font-poster text-2xl uppercase text-charcoal">Payment received</h1>
-            <p className="mt-2 font-body text-sm text-charcoal/70">
+            <h1 className="mt-4 font-poster text-2xl uppercase text-brand-redDeep">Payment received</h1>
+            <p className="mt-2 font-body text-sm text-brand-brown/70">
               {order.orderID} · {GHS(order.total)} — the kitchen has it.
             </p>
             <button
               type="button"
               onClick={() => navigate(`/track/${order.orderID}`)}
-              className="mt-6 inline-flex h-11 items-center rounded-full bg-brick px-6 font-body text-xs font-semibold uppercase tracking-[0.2em] text-cream"
+              className="mt-6 inline-flex h-11 items-center rounded-full bg-brand-red px-6 font-display text-xs font-semibold uppercase tracking-wide text-brand-cream"
             >
               Track my order
             </button>
@@ -94,14 +94,14 @@ export default function PaymentCallback() {
             <span aria-hidden className="text-5xl">
               ⚠️
             </span>
-            <h1 className="mt-4 font-poster text-2xl uppercase text-charcoal">Payment not completed</h1>
-            <p className="mt-2 font-body text-sm text-charcoal/70">
+            <h1 className="mt-4 font-poster text-2xl uppercase text-brand-redDeep">Payment not completed</h1>
+            <p className="mt-2 font-body text-sm text-brand-brown/70">
               Paystack didn't confirm this one. Nothing has been charged, and your cart is
               untouched — you can try again.
             </p>
             <Link
               to="/checkout"
-              className="mt-6 inline-flex h-11 items-center rounded-full bg-brick px-6 font-body text-xs font-semibold uppercase tracking-[0.2em] text-cream"
+              className="mt-6 inline-flex h-11 items-center rounded-full bg-brand-red px-6 font-display text-xs font-semibold uppercase tracking-wide text-brand-cream"
             >
               Back to checkout
             </Link>
@@ -113,17 +113,17 @@ export default function PaymentCallback() {
             <span aria-hidden className="text-5xl">
               ⚠️
             </span>
-            <h1 className="mt-4 font-poster text-2xl uppercase text-charcoal">
+            <h1 className="mt-4 font-poster text-2xl uppercase text-brand-redDeep">
               Couldn't confirm
             </h1>
-            <p className="mt-2 font-body text-sm text-charcoal/70">{error}</p>
-            <p className="mt-2 font-body text-xs text-charcoal/50">
+            <p className="mt-2 font-body text-sm text-brand-brown/70">{error}</p>
+            <p className="mt-2 font-body text-xs text-brand-brown/50">
               If money left your account, it will reconcile automatically — Paystack notifies us
               separately. Keep your reference: {reference || '—'}
             </p>
             <Link
               to="/"
-              className="mt-6 inline-flex h-11 items-center rounded-full border-[1.5px] border-charcoal/20 px-6 font-body text-xs font-semibold uppercase tracking-[0.2em] text-charcoal"
+              className="mt-6 inline-flex h-11 items-center rounded-full border-[1.5px] border-brand-brown/20 px-6 font-display text-xs font-semibold uppercase tracking-wide text-brand-brown"
             >
               Back to menu
             </Link>

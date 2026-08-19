@@ -18,7 +18,12 @@ interface Props {
 export default function CartNotices({ priceNotices, issues, onDismiss, className = '' }: Props) {
   if (!priceNotices.length && !issues.length) return null;
   return (
-    <div className={`rounded-xl bg-gold/20 px-3 py-2 font-body text-xs text-charcoal ${className}`}>
+    // Orange is an accent, not a panel: it carries the eye here as a rule down
+    // the edge, and the text sits on creamDeep at 6.3:1 rather than on a wash
+    // of orange that no text clears.
+    <div
+      className={`rounded-xl border-l-[3px] border-brand-orange bg-brand-creamDeep px-3 py-2 font-body text-xs text-brand-brown ${className}`}
+    >
       {issues.map((l) => (
         <p key={l.key}>{l.issue} — it has been removed from your cart.</p>
       ))}

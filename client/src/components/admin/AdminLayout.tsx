@@ -7,7 +7,7 @@ import ConnectionIndicator from './ConnectionIndicator';
  * The admin shell.
  *
  * Fixed left sidebar with grouped navigation, a very light neutral canvas, and
- * white cards doing the separating. The Besties red appears only on the active
+ * white cards doing the separating. The Viannes Bistro red appears only on the active
  * row and on primary actions — the rest is grayscale on purpose, so the admin
  * reads as a back-office tool rather than a second storefront.
  */
@@ -65,9 +65,9 @@ export default function AdminLayout() {
     <>
       <div className="flex items-center gap-2.5 px-3 pb-6 pt-1">
         <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-red text-sm text-white">
-          B
+          V
         </span>
-        <span className="text-[0.95rem] font-semibold tracking-tight text-admin-ink">Besties</span>
+        <span className="text-[0.95rem] font-semibold tracking-tight text-admin-ink">Viannes Bistro</span>
       </div>
 
       <nav className="flex-1 space-y-6 overflow-y-auto">
@@ -157,7 +157,7 @@ export default function AdminLayout() {
           >
             ☰
           </button>
-          <span className="text-sm font-semibold tracking-tight">Besties Admin</span>
+          <span className="text-sm font-semibold tracking-tight">Viannes Admin</span>
           <ConnectionIndicator className="ml-auto" />
         </div>
 

@@ -54,18 +54,18 @@ export default function MobileCartBar() {
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ duration: 0.15, ease: 'easeOut' }}
-          className="fixed inset-x-0 bottom-0 z-cart-bar border-t border-charcoal/10 bg-creamLt/95 px-4 pt-3 backdrop-blur sm:hidden"
+          className="fixed inset-x-0 bottom-0 z-cart-bar border-t border-brand-brown/10 bg-brand-cream/95 px-4 pt-3 backdrop-blur sm:hidden"
           style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
         >
           <button
             type="button"
             onClick={openCart}
-            className="flex h-12 w-full items-center justify-between rounded-full bg-brick px-5 text-cream transition-transform duration-150 active:scale-[0.98]"
+            className="flex h-12 w-full items-center justify-between rounded-full bg-brand-red px-5 text-brand-cream transition-transform duration-150 active:scale-[0.98]"
           >
-            <span className="grid h-7 min-w-[1.75rem] place-items-center rounded-full bg-cream/20 px-2 font-body text-xs font-bold tabular-nums">
+            <span className="grid h-7 min-w-[1.75rem] place-items-center rounded-full bg-brand-cream/20 px-2 font-body text-xs font-bold tabular-nums">
               {itemCount}
             </span>
-            <span className="font-body text-xs font-semibold uppercase tracking-[0.2em]">
+            <span className="font-display text-xs font-semibold uppercase tracking-wide">
               View cart
             </span>
             <span className="font-body text-sm font-bold tabular-nums">{GHS(subtotal)}</span>
