@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+/* No smooth-scroll: it fights ScrollTrigger's scrub/pin maths. Anchor jumps to
+   #menu are instant, which is what a phone tap wants anyway. */
+html {
+  scroll-behavior: auto;
+}
+
+/* TiltedCard ships `object-fit: cover` and `border-radius: 15px` on its image.
+   Our products are transparent cut-outs: cover would crop them, and the radius
+   belongs to the card, not to the photograph. Scoped to our cards so the
+   vendor component stays untouched. */
+.product-card .tilted-card-img {
+  object-fit: contain;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* Reduced-motion entrance: a plain 200ms opacity fade, driven by a class swap
+   rather than a JS tween, so it can never be left frozen part-way through. */
+.reduced-fade {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.reduced-fade.is-in {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 200ms !important;
+  }
+}
+
+body {
+  @apply bg-brand-cream text-brand-charcoal font-body antialiased;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-red px-7 py-3 font-display font-bold text-white shadow-lg shadow-brand-red/30 transition-transform hover:scale-105 active:scale-95;
+  }
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-gold px-7 py-3 font-display font-bold text-brand-charcoal shadow-lg shadow-brand-gold/30 transition-transform hover:scale-105 active:scale-95;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-brand-charcoal/15 px-5 py-2 font-display font-semibold transition-colors hover:border-brand-red hover:text-brand-red;
+  }
+  .card {
+    @apply rounded-2xl bg-white shadow-sm ring-1 ring-black/5;
+  }
+  .section-pad {
+    @apply px-5 py-16 sm:px-8 md:py-24;
+  }
+}
+
+/* Hide scrollbar for horizontal carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,77 @@
+# Render blueprint for the Besties API.
+#
+#   render.com → New → Blueprint → point at this repo.
+#
+# ⚠️  THIS FILE ONLY APPLIES TO SERVICES CREATED VIA BLUEPRINT.
+#     The live service was created by hand in the Render dashboard, so none of
+#     the envVars below were ever applied to it. Adding a variable here does
+#     NOT set it on that service — enter it in the dashboard as well, or the
+#     server will fail its boot-time validation on the next deploy.
+#
+# This MUST be a normal web service, not a serverless/edge target: Socket.IO
+# holds a long-lived connection for live order updates, and a function runtime
+# tears that down between invocations.
+services:
+  - type: web
+    name: besties-api
+    runtime: node
+    plan: free # ⚠️ see the cold-start note in DEPLOYMENT.md — use `starter` for anything real
+    rootDir: server
+    region: frankfurt # closest of Render's regions to Ghana; oregon/ohio are ~2× the latency
+
+    # --include=dev is REQUIRED and verified, not defensive.
+    # Render sets NODE_ENV=production, which makes `npm ci` skip devDependencies
+    # — and `typescript` is a devDependency, so a plain `npm ci` produces
+    # "sh: tsc: not found" at build time. The alternative (moving typescript
+    # into dependencies) would ship the compiler in the runtime image.
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+
+    healthCheckPath: /api/health
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Render terminates TLS at exactly one proxy hop. Without this the rate
+      # limiter sees every visitor as the same IP and locks everyone out
+      # together, and `secure` cookies are not recognised as secure.
+      - key: TRUST_PROXY
+        value: 1
+      - key: SYNC_CATALOGUE_ON_BOOT
+        # Safe in production: the sync is an upsert that never deletes. Items
+        # removed from the catalogue are hidden, not destroyed.
+        value: true
+      - key: DELIVERY_FEE_GHS
+        value: 5
+      - key: PAYSTACK_MODE
+        value: live
+
+      # ── Set these in the Render dashboard. sync:false keeps them OUT of git. ──
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CLIENT_ORIGINS
+        sync: false
+      # Lets Vercel PREVIEW deploys reach the API. Without it every preview URL
+      # is CORS-blocked, since each one gets a fresh hostname.
+      #   ^https://besties-[a-z0-9-]+\.vercel\.app$
+      # ANCHOR IT AT BOTH ENDS. vercel.app is a shared domain: an unanchored
+      # pattern would match https://evil.vercel.app/... and hand any stranger's
+      # deployment a credentialed path to this API.
+      - key: CLIENT_ORIGIN_REGEX
+        sync: false
+      # Where the browser app is served from — builds the Paystack redirect.
+      # Set this wrong and paying customers land on the wrong site.
+      - key: PUBLIC_APP_URL
+        sync: false
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
+      - key: PAYSTACK_WEBHOOK_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

@@ -1,0 +1,23 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+*.log
+server/src/uploads/*
+!server/src/uploads/.gitkeep
+.DS_Store
+coverage/
+
+# Environment — never commit real credentials. Only *.example files are tracked.
+.env.*
+!.env.example
+server/.env
+client/.env
+
+# Generated at build time from server/src/data/catalogue.ts
+# (kept OUT of git so it can never go stale against the catalogue)
+client/src/lib/menuData.generated.ts
+
+# Local scratch
+*.local

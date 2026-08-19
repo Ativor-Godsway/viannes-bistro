@@ -1,0 +1,18 @@
+{
+  "name": "besties",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Besties Fast Food — full-stack ordering platform (University of Ghana campus)",
+  "scripts": {
+    "dev": "concurrently -n server,client -c red,cyan \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "seed": "npm --prefix server run seed",
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "build": "npm --prefix client run build && npm --prefix server run build",
+    "seed:menu": "npm --prefix server run seed:menu"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
