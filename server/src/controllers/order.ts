@@ -58,7 +58,7 @@ export const createOrderSchema = z
    * which never touches the gateway.
    *
    * This used to be optional always, with the controller substituting
-   * `<phone>@guest.besties.local` — and `.local` is a reserved non-routable
+   * `<phone>@guest.viannes.local` — and `.local` is a reserved non-routable
    * TLD that Paystack rejects outright, so every card payment failed with
    * "Invalid Email Address Passed" before it started.
    */

@@ -33,7 +33,7 @@ interface AuthState {
   logout: () => Promise<void>;
 }
 
-const CACHE_KEY = 'besties_user';
+const CACHE_KEY = 'viannes_user';
 
 function readCache(): AuthUser | null {
   try {

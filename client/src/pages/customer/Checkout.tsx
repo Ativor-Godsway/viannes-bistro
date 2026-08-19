@@ -11,7 +11,9 @@ import type { Order } from '../../lib/types';
 type Method = 'delivery' | 'pickup';
 type Pay = 'cash' | 'card' | 'mobile_money';
 
-const PICKUP_POINT = 'Besties kitchen — Night Market, Legon';
+// TODO(viannes): confirm the real pickup address and put it here. This
+// string is shown to the customer at checkout and stored on the order.
+const PICKUP_POINT = 'Viannes Bistro kitchen — address to be confirmed';
 
 /** Ghana mobile: 0XXXXXXXXX (10 digits) or +233XXXXXXXXX. */
 const PHONE_RE = /^(0\d{9}|\+233\d{9})$/;
@@ -24,10 +26,10 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
  * as three different widgets stacked up.
  */
 const CONTROL = 'h-12 rounded-xl';
-const field = `${CONTROL} w-full border border-charcoal/15 bg-white px-4 font-body text-sm text-charcoal outline-none transition-colors duration-150 focus:border-brick`;
+const field = `${CONTROL} w-full border border-brand-brown/65 bg-brand-paper px-4 font-body text-sm text-brand-brown outline-none transition-colors duration-150 focus:border-brand-redDeep`;
 const segment = `${CONTROL} flex-1 border px-3 font-body text-sm font-semibold transition-colors duration-150`;
-const segmentOn = 'border-brick bg-brick text-cream';
-const segmentOff = 'border-charcoal/15 bg-white text-charcoal hover:border-brick/40';
+const segmentOn = 'border-brand-redDeep bg-brand-redDeep text-brand-cream';
+const segmentOff = 'border-brand-brown/65 bg-brand-paper text-brand-brown hover:border-brand-redDeep';
 
 /**
  * Single-screen checkout. Not a wizard — this is a campus food order.
@@ -122,11 +124,11 @@ export default function Checkout() {
 
   if (lines.length === 0) {
     return (
-      <div className="mx-auto w-full max-w-[1120px] px-5 pb-20 pt-28 text-center sm:px-8">
-        <p className="font-body text-charcoal/70">Your cart is empty.</p>
+      <div className="mx-auto w-full max-w-[1120px] px-5 pb-20 pt-12 text-center sm:px-8">
+        <p className="font-body text-brand-brown/70">Your cart is empty.</p>
         <Link
           to="/"
-          className="mt-6 inline-flex h-11 items-center rounded-full bg-brick px-6 font-body text-xs font-semibold uppercase tracking-[0.2em] text-cream"
+          className="mt-6 inline-flex h-11 items-center rounded-full bg-brand-red px-6 font-display text-xs font-semibold uppercase tracking-wide text-brand-cream"
         >
           Browse menu
         </Link>
@@ -141,19 +143,19 @@ export default function Checkout() {
     <button
       type="submit"
       disabled={!canSubmit}
-      className="flex min-h-[3.25rem] w-full flex-col items-center justify-center gap-0.5 rounded-2xl bg-brick px-4 py-2.5 text-cream transition-transform duration-150 active:scale-[0.98] disabled:opacity-50"
+      className="flex min-h-[3.25rem] w-full flex-col items-center justify-center gap-0.5 rounded-2xl bg-brand-red px-4 py-2.5 text-brand-cream transition-transform duration-150 active:scale-[0.98] disabled:opacity-50"
     >
       <span className="flex items-center gap-2 text-center font-body text-xs font-semibold uppercase tracking-[0.18em]">
         {submitting && (
           <span
             aria-hidden
-            className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-cream/40 border-t-cream"
+            className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-brand-cream/40 border-t-brand-cream"
           />
         )}
         {submitting ? 'Placing order' : payLabel}
       </span>
       {!submitting && (
-        <span className="font-body text-[0.7rem] tabular-nums text-cream/80">{paySubLabel}</span>
+        <span className="font-body text-[0.7rem] tabular-nums text-brand-cream/80">{paySubLabel}</span>
       )}
     </button>
   );
@@ -161,8 +163,8 @@ export default function Checkout() {
   return (
     // ONE centred container holds the title, the form and the summary, so the
     // heading and the first field share a left edge. No inner max-widths.
-    <div className="mx-auto w-full max-w-[1120px] px-5 pb-32 pt-24 sm:px-8 lg:pb-24">
-      <h1 className="font-poster text-[clamp(2rem,9vw,3.5rem)] uppercase text-charcoal">Checkout</h1>
+    <div className="mx-auto w-full max-w-[1120px] px-5 pb-32 pt-12 sm:px-8 lg:pb-24">
+      <h1 className="font-poster text-[clamp(2rem,9vw,3.5rem)] uppercase text-brand-redDeep">Checkout</h1>
 
       {/*
         minmax(0,1fr) — not 1fr — is load-bearing. A bare `1fr` track is
@@ -281,7 +283,7 @@ export default function Checkout() {
               </Group>
             </>
           ) : (
-            <div className="rounded-xl bg-cream px-4 py-3 font-body text-sm text-charcoal">
+            <div className="rounded-xl bg-brand-creamMid px-4 py-3 font-body text-sm text-brand-brown">
               <span className="font-semibold">Pick up from:</span> {PICKUP_POINT}
             </div>
           )}
@@ -313,10 +315,10 @@ export default function Checkout() {
         </div>
 
         {/* ── Summary column. Sticky, so it stays with you as the form scrolls. */}
-        <aside className="min-w-0 rounded-2xl border border-charcoal/[0.08] bg-cream p-5 lg:sticky lg:top-24 lg:self-start">
-          <h2 className="font-poster text-xl uppercase text-charcoal">Summary</h2>
+        <aside className="min-w-0 rounded-2xl border border-brand-brown/20 bg-brand-creamMid p-5 lg:sticky lg:top-24 lg:self-start">
+          <h2 className="font-poster text-xl uppercase text-brand-redDeep">Summary</h2>
 
-          <ul className="mt-3 space-y-3 font-body text-sm text-charcoal">
+          <ul className="mt-3 space-y-3 font-body text-sm text-brand-brown">
             {lines.map((l) => {
               const summary = describeSelections(
                 l.variantName,
@@ -329,12 +331,12 @@ export default function Checkout() {
                       {l.quantity}× {l.name}
                     </span>
                     {summary && (
-                      <span className="mt-0.5 line-clamp-2 text-xs text-charcoal/60">
+                      <span className="mt-0.5 line-clamp-2 text-xs text-brand-brown/60">
                         {summary}
                       </span>
                     )}
                     {l.specialInstructions && (
-                      <span className="mt-0.5 line-clamp-2 text-xs italic text-charcoal/50">
+                      <span className="mt-0.5 line-clamp-2 text-xs italic text-brand-brown/50">
                         “{l.specialInstructions}”
                       </span>
                     )}
@@ -354,23 +356,23 @@ export default function Checkout() {
             className="mt-3"
           />
 
-          <dl className="mt-4 space-y-1.5 border-t border-charcoal/10 pt-3 font-body text-sm text-charcoal">
+          <dl className="mt-4 space-y-1.5 border-t border-brand-brown/20 pt-3 font-body text-sm text-brand-brown">
             <Row label={`Items (${itemCount})`} value={GHS(subtotal)} />
             <Row
               label={method === 'pickup' ? 'Pickup' : 'Delivery'}
               value={deliveryFee ? GHS(deliveryFee) : <span className="text-success">Free</span>}
             />
             <Row label="Tax" value="Included" muted />
-            <div className="flex items-baseline justify-between gap-4 border-t border-charcoal/10 pt-2 text-base font-extrabold">
+            <div className="flex items-baseline justify-between gap-4 border-t border-brand-brown/20 pt-2 text-base font-extrabold">
               <dt className="min-w-0 truncate">Total</dt>
-              <dd className="shrink-0 text-right tabular-nums text-brick">{GHS(total)}</dd>
+              <dd className="shrink-0 text-right tabular-nums text-brand-redDeep">{GHS(total)}</dd>
             </div>
           </dl>
 
           {error && (
             <p
               role="alert"
-              className="mt-4 rounded-xl bg-brick/10 px-3 py-2 font-body text-sm text-brick"
+              className="mt-4 rounded-xl bg-brand-red/10 px-3 py-2 font-body text-sm text-brand-redDeep"
             >
               {error}
             </p>
@@ -385,15 +387,15 @@ export default function Checkout() {
           total so it never scrolls out of reach. Inside the form so it submits.
         */}
         <div
-          className="fixed inset-x-0 bottom-0 z-cart-bar border-t border-charcoal/10 bg-creamLt/95 px-5 pt-3 backdrop-blur lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-cart-bar border-t border-brand-brown/20 bg-brand-cream/95 px-5 pt-3 backdrop-blur lg:hidden"
           style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
         >
           <div className="mx-auto flex w-full max-w-[1120px] items-center gap-4">
             <div className="min-w-0">
-              <p className="font-body text-[0.65rem] font-semibold uppercase tracking-wider text-charcoal/60">
+              <p className="font-display text-[0.65rem] font-semibold uppercase tracking-wider text-brand-brown/60">
                 Total
               </p>
-              <p className="font-body text-lg font-extrabold tabular-nums text-brick">
+              <p className="font-body text-lg font-extrabold tabular-nums text-brand-redDeep">
                 {GHS(total)}
               </p>
             </div>
@@ -409,7 +411,7 @@ export default function Checkout() {
 
 function Legend({ children }: { children: React.ReactNode }) {
   return (
-    <legend className="mb-1.5 font-body text-xs font-semibold uppercase tracking-wider text-charcoal/70">
+    <legend className="mb-1.5 font-display text-xs font-semibold uppercase tracking-wider text-brand-brown/70">
       {children}
     </legend>
   );
@@ -434,7 +436,7 @@ function Group({
     <div className="min-w-0">
       <label
         htmlFor={htmlFor}
-        className="mb-1.5 block font-body text-xs font-semibold uppercase tracking-wider text-charcoal/70"
+        className="mb-1.5 block font-display text-xs font-semibold uppercase tracking-wider text-brand-brown/70"
       >
         {label}
         {optional && <span className="ml-1 font-normal normal-case">(optional)</span>}
@@ -443,7 +445,7 @@ function Group({
       {/* The hint keeps its line whether or not it is showing, so switching
           payment method cannot reflow the form under the customer's finger. */}
       {(error || hint) && (
-        <p className={`mt-1 font-body text-xs ${error ? 'text-brick' : 'text-charcoal/50'}`}>
+        <p className={`mt-1 font-body text-xs ${error ? 'text-brand-redDeep' : 'text-brand-brown/50'}`}>
           {error ?? hint}
         </p>
       )}
@@ -462,7 +464,7 @@ function Row({
   muted?: boolean;
 }) {
   return (
-    <div className={`flex items-baseline justify-between gap-4 ${muted ? 'text-charcoal/60' : ''}`}>
+    <div className={`flex items-baseline justify-between gap-4 ${muted ? 'text-brand-brown/60' : ''}`}>
       <dt className="min-w-0 truncate">{label}</dt>
       <dd className="shrink-0 text-right tabular-nums">{value}</dd>
     </div>

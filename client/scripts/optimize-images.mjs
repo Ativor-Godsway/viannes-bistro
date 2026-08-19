@@ -1,22 +1,28 @@
 /**
- * One-off image pipeline for the storefront food photography.
+ * Image pipeline for every raster the storefront ships.
  *
  *   npm run images
  *
- * Reads the source cut-outs from public/menu/*.png and emits optimised
- * derivatives next to them in public/menu/opt/:
+ * Two source sets, because they are two different kinds of picture and want
+ * two different fallbacks:
  *
- *   <name>-<width>.webp   quality 82, alpha preserved
- *   <name>-<width>.png    resized PNG fallback for <picture>
+ *   public/menu/*.png       transparent product cut-outs → WebP + PNG fallback
+ *                           (PNG, because the alpha channel is the whole point)
+ *   assets-src/photos/*.png lifestyle photographs        → WebP + JPEG fallback
+ *                           (JPEG, because they are opaque and PNG triples the
+ *                           weight of a photograph for nothing)
  *
- * Widths are the *render* sizes, not the source resolution:
- *   hero (pizza) → 640 / 1280   (renders at min(85vw, 620px))
- *   menu shapes  → 240 / 480    (render at ~140–200px)
- * pizza gets all four because it is both the hero object and the first
- * menu category.
+ * Derivatives land in `public/<set>/opt/<name>-<width>.<ext>`. The photograph
+ * sources live OUTSIDE public/ on purpose: vite copies public/ into dist
+ * verbatim, so a multi-megabyte source nobody requests would still be deployed. Widths are the *render*
+ * sizes, not the source resolution, and are capped at the source width so the
+ * srcset can never claim a candidate that is really smaller than advertised.
  *
  * Sources are left untouched; re-running is idempotent. Metadata (EXIF and
  * everything else) is stripped — sharp drops it unless withMetadata() is called.
+ *
+ * The photographs are prepared by scripts/prep-photos.mjs first; see that file
+ * for why they are cropped on disk rather than in CSS.
  */
 import sharp from 'sharp';
 import { readdir, mkdir, stat, writeFile } from 'fs/promises';
@@ -24,35 +30,69 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SRC = path.join(ROOT, 'public', 'menu');
-const OUT = path.join(SRC, 'opt');
 
-const HERO = 'pizza';
-const HERO_WIDTHS = [640, 1280];
-// 640 is not optional: the item configurator renders the product photograph
-// large, and 480 is soft on a retina screen. Before it was here, every product
-// except the hero 404'd when the configurator asked for -640.
-const MENU_WIDTHS = [240, 480, 640];
 const QUALITY = 82;
+
+// 640 is not optional for the menu set: the item configurator renders the
+// product photograph large, and 480 is soft on a retina screen. Before it was
+// here, every product except the hero 404'd when the configurator asked for it.
+const MENU_WIDTHS = [240, 480, 640];
+// The hero product is both the hero object and the first menu category.
+const MENU_HERO = { pizza: [640, 1280] };
+
+// The photographs render at ~340px (memories row) up to ~560px (hero frame),
+// so 1200 covers the largest at 2×. Sources cap most of these anyway.
+const PHOTO_WIDTHS = [480, 800, 1200];
+
+const SETS = [
+  {
+    name: 'menu',
+    dir: path.join(ROOT, 'public', 'menu'),
+    out: path.join(ROOT, 'public', 'menu', 'opt'),
+    widths: () => MENU_WIDTHS,
+    extra: MENU_HERO,
+    fallback: 'png',
+    manifest: path.join(ROOT, 'src', 'data', 'imageManifest.json'),
+  },
+  {
+    name: 'photos',
+    dir: path.join(ROOT, 'assets-src', 'photos'),
+    out: path.join(ROOT, 'public', 'photos', 'opt'),
+    widths: () => PHOTO_WIDTHS,
+    extra: {},
+    fallback: 'jpeg',
+    manifest: path.join(ROOT, 'src', 'data', 'photoManifest.json'),
+  },
+];
 
 const kb = (n) => `${(n / 1024).toFixed(1)}KB`;
 
-async function main() {
-  await mkdir(OUT, { recursive: true });
-  const files = (await readdir(SRC)).filter((f) => f.endsWith('.png'));
+/** Write the fallback in whichever opaque/alpha format this set calls for. */
+function encodeFallback(pipeline, format) {
+  return format === 'jpeg'
+    ? pipeline.jpeg({ quality: QUALITY, mozjpeg: true })
+    : pipeline.png({ compressionLevel: 9, palette: true, quality: 85 });
+}
+
+async function runSet(set) {
+  const out = set.out;
+  await mkdir(out, { recursive: true });
+  const files = (await readdir(set.dir)).filter((f) => f.endsWith('.png'));
 
   let srcTotal = 0;
   let webpTotal = 0;
-  let pngTotal = 0;
+  let fallbackTotal = 0;
   const rows = [];
   const manifest = {};
 
   for (const file of files) {
     const name = path.basename(file, '.png');
-    const srcPath = path.join(SRC, file);
+    const srcPath = path.join(set.dir, file);
     srcTotal += (await stat(srcPath)).size;
 
-    const wanted = name === HERO ? [...MENU_WIDTHS, ...HERO_WIDTHS] : MENU_WIDTHS;
+    const wanted = [...new Set([...set.widths(), ...(set.extra[name] ?? [])])].sort(
+      (a, b) => a - b
+    );
 
     // Never claim a width the source can't actually supply: an upscale-capped
     // file emitted as `-1280` would make the browser pick a candidate that is
@@ -60,38 +100,46 @@ async function main() {
     const srcWidth = (await sharp(srcPath).metadata()).width;
     const widths = [...new Set(wanted.map((w) => Math.min(w, srcWidth)))].sort((a, b) => a - b);
     if (widths.join() !== wanted.join()) {
-      console.log(`  note: ${file} is ${srcWidth}px wide — emitting ${widths.join('/')} instead of ${wanted.join('/')}`);
+      console.log(
+        `  note: ${file} is ${srcWidth}px wide — emitting ${widths.join('/')} instead of ${wanted.join('/')}`
+      );
     }
     manifest[name] = widths;
 
     for (const w of widths) {
       const base = sharp(srcPath).resize({ width: w, withoutEnlargement: true });
 
-      const webpPath = path.join(OUT, `${name}-${w}.webp`);
+      const webpPath = path.join(out, `${name}-${w}.webp`);
       await base.clone().webp({ quality: QUALITY, alphaQuality: 90, effort: 6 }).toFile(webpPath);
       const webpSize = (await stat(webpPath)).size;
       webpTotal += webpSize;
 
-      const pngPath = path.join(OUT, `${name}-${w}.png`);
-      await base.clone().png({ compressionLevel: 9, palette: true, quality: 85 }).toFile(pngPath);
-      const pngSize = (await stat(pngPath)).size;
-      pngTotal += pngSize;
+      const ext = set.fallback === 'jpeg' ? 'jpg' : 'png';
+      const fbPath = path.join(out, `${name}-${w}.${ext}`);
+      await encodeFallback(base.clone(), set.fallback).toFile(fbPath);
+      const fbSize = (await stat(fbPath)).size;
+      fallbackTotal += fbSize;
 
-      rows.push([`${name}-${w}`, kb(webpSize), kb(pngSize)]);
+      rows.push([`${name}-${w}`, kb(webpSize), kb(fbSize)]);
     }
   }
 
   // The app reads this so srcset always matches what actually exists on disk.
-  const manifestPath = path.join(ROOT, 'src', 'data', 'imageManifest.json');
-  await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+  await writeFile(set.manifest, JSON.stringify(manifest, null, 2) + '\n');
 
-  console.log('\n  derivative            webp        png');
-  console.log('  ' + '─'.repeat(40));
-  for (const [n, w, p] of rows) console.log(`  ${n.padEnd(20)} ${w.padStart(8)} ${p.padStart(10)}`);
-  console.log('  ' + '─'.repeat(40));
+  console.log(`\n  ${set.name}`);
+  console.log(`  derivative                webp   ${set.fallback.padStart(8)}`);
+  console.log('  ' + '─'.repeat(44));
+  for (const [n, w, p] of rows) console.log(`  ${n.padEnd(24)} ${w.padStart(8)} ${p.padStart(10)}`);
+  console.log('  ' + '─'.repeat(44));
   console.log(`  source PNGs:      ${kb(srcTotal)}`);
   console.log(`  all webp:         ${kb(webpTotal)}`);
-  console.log(`  all png fallback: ${kb(pngTotal)}\n`);
+  console.log(`  all fallbacks:    ${kb(fallbackTotal)}`);
+}
+
+async function main() {
+  for (const set of SETS) await runSet(set);
+  console.log('');
 }
 
 main().catch((err) => {

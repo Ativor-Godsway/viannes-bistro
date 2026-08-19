@@ -1,8 +1,8 @@
 {
-  "name": "besties",
+  "name": "viannes",
   "version": "1.0.0",
   "private": true,
-  "description": "Besties Fast Food — full-stack ordering platform (University of Ghana campus)",
+  "description": "Viannes Bistro — full-stack ordering platform (University of Ghana campus)",
   "scripts": {
     "dev": "concurrently -n server,client -c red,cyan \"npm:dev:server\" \"npm:dev:client\"",
     "dev:server": "npm --prefix server run dev",

@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
+import Marquee from './ui/Marquee';
 import Footer from './Footer';
 import CartDrawer from './CartDrawer';
 import MobileCartBar from './MobileCartBar';
@@ -24,7 +25,10 @@ export default function CustomerLayout() {
     <CatalogueProvider>
       <CartProvider>
         <ConfiguratorProvider>
-          <div className="flex min-h-screen flex-col">
+          <div className="flex min-h-screen flex-col bg-brand-cream">
+            {/* Above the navbar in the document, so the ticker scrolls away
+                while the bar stays stuck to the top. */}
+            <Marquee />
             <Navbar />
             <main className="flex-1">
               <Outlet />
@@ -37,7 +41,7 @@ export default function CustomerLayout() {
             {!isHome && (
               <Link
                 to="/admin"
-                className="fixed bottom-4 left-4 z-admin-link rounded-full bg-charcoal/80 px-3 py-1 text-xs font-semibold text-white/90 backdrop-blur transition-colors duration-150 hover:bg-charcoal"
+                className="fixed bottom-4 left-4 z-admin-link rounded-full bg-brand-ink/80 px-3 py-1 font-display text-xs font-semibold text-brand-cream backdrop-blur transition-colors duration-150 hover:bg-brand-ink"
               >
                 Admin
               </Link>

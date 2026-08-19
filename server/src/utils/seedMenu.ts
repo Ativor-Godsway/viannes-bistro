@@ -25,7 +25,7 @@ import { ModifierGroupTemplate } from '../models/ModifierGroupTemplate';
 import { CATALOGUE, TEMPLATES } from '../data/catalogue';
 import { syncCatalogue, categorySlugOf } from './syncCatalogue';
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/besties';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/viannes';
 
 /** True only for an unmistakably local database. */
 export function isLocalDatabase(uri: string): boolean {

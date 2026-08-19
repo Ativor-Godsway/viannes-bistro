@@ -100,18 +100,29 @@ const nav = readFileSync(resolve(here, '../src/components/Navbar.tsx'), 'utf8');
 // actually matters is narrower — the nav may only point at the shop itself,
 // never at some other route.
 check('the nav only ever links to the shop', () => {
-  const targets = [...nav.matchAll(/<Link\s+to="([^"]+)"/g)].map((m) => m[1]);
-  const offShop = targets.filter((t) => t !== '/' && t !== '/#menu');
-  assert(offShop.length === 0, `nav links to ${JSON.stringify(offShop)}`);
+  // The rebrand's nav builds its links from a LINKS table, so the targets are
+  // in that array rather than inline in the JSX. Read both.
+  const inline = [...nav.matchAll(/<Link\s+to="([^"]+)"/g)].map((m) => m[1]);
+  const table = [...nav.matchAll(/to:\s*'([^']+)'/g)].map((m) => m[1]);
+  const offShop = [...inline, ...table].filter((t) => t !== '/' && !t.startsWith('/#'));
+  assert(offShop.length === 0, `nav links off the shop: ${JSON.stringify(offShop)}`);
 });
 check('the nav navigates with anchors, not buttons', () => {
   // cmd-click, middle-click and "open in new tab" all need a real href.
   assert(/<Link\s+to="\/"/.test(nav), 'the wordmark does not link home off the homepage');
-  assert(/<Link\s+to="\/#menu"/.test(nav), 'Menu does not link to the menu section off the homepage');
+  // Off the homepage every section link must be a <Link>, whether it is written
+  // inline or driven by the LINKS table.
+  assert(
+    /<Link[^>]+to=\{link\.to\}/.test(nav) || /<Link\s+to="\/#menu"/.test(nav),
+    'the section links do not navigate off the homepage'
+  );
+  assert(/'\/#menu'/.test(nav), 'nothing points at the menu section');
 });
 check('the homepage keeps its scroll-only behaviour', () =>
   assert(
-    /onClick=\{\(\) => scrollTo\(\)\}/.test(nav) && /onClick=\{\(\) => scrollTo\('menu'\)\}/.test(nav),
+    /onClick=\{\(\) => scrollTo\(\)\}/.test(nav) &&
+      (/onClick=\{\(\) => scrollTo\(link\.id\)\}/.test(nav) ||
+        /onClick=\{\(\) => scrollTo\('menu'\)\}/.test(nav)),
     'the homepage no longer scrolls in place'
   )
 );

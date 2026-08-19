@@ -30,7 +30,7 @@ import { syncCatalogue } from './syncCatalogue';
 import { isLocalDatabase } from './seedMenu';
 
 const MONGO_URI = process.env.MONGO_URI || '';
-const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || 'admin@besties.com';
+const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || 'admin@viannesbistro.com';
 const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD || '';
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
@@ -77,7 +77,7 @@ async function seed() {
 
   console.log('👤 Creating the admin account…');
   await User.create({
-    name: 'Besties Admin',
+    name: 'Viannes Admin',
     email: ADMIN_EMAIL,
     passwordHash: await hashPassword(ADMIN_PASSWORD),
     role: 'admin',
@@ -89,7 +89,7 @@ async function seed() {
     const demoPassword = process.env.SEED_DEMO_PASSWORD || ADMIN_PASSWORD;
     await User.create({
       name: 'Demo Customer',
-      email: 'demo@besties.com',
+      email: 'demo@viannesbistro.com',
       passwordHash: await hashPassword(demoPassword),
       role: 'customer',
       phone: '0244123456',

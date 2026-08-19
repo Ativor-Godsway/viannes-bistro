@@ -30,16 +30,16 @@ export default function Confirmation() {
   }, [id, order]);
 
   return (
-    <div className="mx-auto max-w-lg px-5 pb-24 pt-28 text-center">
-      <p className="font-body text-xs font-semibold uppercase tracking-[0.3em] text-brick">
+    <div className="mx-auto max-w-lg px-5 pb-24 pt-12 text-center">
+      <p className="font-body text-xs font-semibold uppercase tracking-[0.3em] text-brand-redDeep">
         Order placed
       </p>
-      <h1 className="mt-3 font-poster text-[clamp(2.5rem,12vw,4.5rem)] uppercase leading-[0.9] text-charcoal">
+      <h1 className="mt-3 font-poster text-[clamp(2.5rem,12vw,4.5rem)] uppercase leading-[0.9] text-brand-redDeep">
         Thank you
       </h1>
 
       {order ? (
-        <div className="mt-8 rounded-2xl border border-charcoal/[0.08] bg-cream p-6 text-left">
+        <div className="mt-8 rounded-2xl border border-brand-brown/20 bg-brand-creamMid p-6 text-left">
           <Row label="Order number" value={order.orderID} mono />
           <Row
             label="Fulfilment"
@@ -51,24 +51,24 @@ export default function Confirmation() {
           <Row label="Total" value={GHS(order.total)} strong />
         </div>
       ) : failed ? (
-        <p className="mt-8 font-body text-sm text-charcoal/70">
+        <p className="mt-8 font-body text-sm text-brand-brown/70">
           Your order went through, but we could not load its details just now. Keep this page's
           address — order <span className="font-semibold">{id}</span>.
         </p>
       ) : (
-        <p className="mt-8 font-body text-sm text-charcoal/60">Loading your order…</p>
+        <p className="mt-8 font-body text-sm text-brand-brown/60">Loading your order…</p>
       )}
 
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link
           to={`/track/${id}`}
-          className="inline-flex h-11 items-center rounded-full bg-brick px-6 font-body text-xs font-semibold uppercase tracking-[0.2em] text-cream transition-transform active:scale-95"
+          className="inline-flex h-11 items-center rounded-full bg-brand-red px-6 font-display text-xs font-semibold uppercase tracking-wide text-brand-cream transition-transform active:scale-95"
         >
           Track order
         </Link>
         <Link
           to="/"
-          className="inline-flex h-11 items-center rounded-full border-[1.5px] border-charcoal/20 px-6 font-body text-xs font-semibold uppercase tracking-[0.2em] text-charcoal transition-transform active:scale-95"
+          className="inline-flex h-11 items-center rounded-full border-[1.5px] border-brand-brown/20 px-6 font-display text-xs font-semibold uppercase tracking-wide text-brand-brown transition-transform active:scale-95"
         >
           Back to menu
         </Link>
@@ -89,11 +89,11 @@ function Row({
   strong?: boolean;
 }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-charcoal/10 py-2 last:border-0">
-      <span className="font-body text-xs uppercase tracking-wider text-charcoal/60">{label}</span>
+    <div className="flex items-baseline justify-between gap-4 border-b border-brand-brown/10 py-2 last:border-0">
+      <span className="font-body text-xs uppercase tracking-wider text-brand-brown/60">{label}</span>
       <span
-        className={`font-body text-charcoal ${mono ? 'tabular-nums' : ''} ${
-          strong ? 'text-lg font-extrabold text-brick' : 'font-semibold'
+        className={`font-body text-brand-brown ${mono ? 'tabular-nums' : ''} ${
+          strong ? 'text-lg font-extrabold text-brand-redDeep' : 'font-semibold'
         }`}
       >
         {value}

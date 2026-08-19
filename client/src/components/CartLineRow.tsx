@@ -25,7 +25,7 @@ export default function CartLineRow({ line, onEdit, onQuantity, onRemove }: Prop
   return (
     <li className="flex items-start gap-3 py-3">
       <div className="relative grid h-14 w-14 shrink-0 place-items-center">
-        <span className="absolute inset-0 rounded-full bg-brick" />
+        <span className="absolute inset-0 rounded-full bg-brand-creamDeep" />
         {line.image && (
           <img
             src={line.image}
@@ -39,26 +39,26 @@ export default function CartLineRow({ line, onEdit, onQuantity, onRemove }: Prop
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate font-poster text-base uppercase text-charcoal">{line.name}</p>
+        <p className="truncate font-poster text-base uppercase text-brand-redDeep">{line.name}</p>
         {summary && (
-          <p className="mt-0.5 line-clamp-2 font-body text-xs text-charcoal/60">{summary}</p>
+          <p className="mt-0.5 line-clamp-2 font-body text-xs text-brand-brown/60">{summary}</p>
         )}
         {line.specialInstructions && (
-          <p className="mt-0.5 line-clamp-1 font-body text-xs italic text-charcoal/50">
+          <p className="mt-0.5 line-clamp-1 font-body text-xs italic text-brand-brown/50">
             “{line.specialInstructions}”
           </p>
         )}
-        <p className="mt-1 font-body text-sm font-bold tabular-nums text-brick">
+        <p className="mt-1 font-body text-sm font-bold tabular-nums text-brand-redDeep">
           {GHS(line.unitPrice * line.quantity)}
           {line.quantity > 1 && (
-            <span className="ml-1 font-normal text-charcoal/50">({GHS(line.unitPrice)} ea)</span>
+            <span className="ml-1 font-normal text-brand-brown/50">({GHS(line.unitPrice)} ea)</span>
           )}
         </p>
         {onEdit && (
           <button
             type="button"
             onClick={onEdit}
-            className="mt-1 font-body text-xs font-semibold uppercase tracking-wide text-charcoal/60 underline transition-colors duration-150 hover:text-brick"
+            className="mt-1 font-display text-xs font-semibold uppercase tracking-wide text-brand-brown/60 underline transition-colors duration-150 hover:text-brand-redDeep"
           >
             Edit
           </button>
@@ -69,7 +69,7 @@ export default function CartLineRow({ line, onEdit, onQuantity, onRemove }: Prop
         <button
           type="button"
           onClick={() => onQuantity(line.quantity - 1)}
-          className="grid h-11 w-11 place-items-center rounded-full border border-charcoal/15 text-lg leading-none text-charcoal transition-transform duration-150 active:scale-95"
+          className="grid h-11 w-11 place-items-center rounded-full border border-brand-brown/15 text-lg leading-none text-brand-brown transition-transform duration-150 active:scale-95"
           aria-label={`Remove one ${line.name}`}
         >
           −
@@ -80,7 +80,7 @@ export default function CartLineRow({ line, onEdit, onQuantity, onRemove }: Prop
         <button
           type="button"
           onClick={() => onQuantity(line.quantity + 1)}
-          className="grid h-11 w-11 place-items-center rounded-full border border-charcoal/15 text-lg leading-none text-charcoal transition-transform duration-150 active:scale-95"
+          className="grid h-11 w-11 place-items-center rounded-full border border-brand-brown/15 text-lg leading-none text-brand-brown transition-transform duration-150 active:scale-95"
           aria-label={`Add one more ${line.name}`}
         >
           +
@@ -88,7 +88,7 @@ export default function CartLineRow({ line, onEdit, onQuantity, onRemove }: Prop
         <button
           type="button"
           onClick={onRemove}
-          className="grid h-11 w-11 place-items-center rounded-full text-charcoal/50 transition-transform duration-150 active:scale-95"
+          className="grid h-11 w-11 place-items-center rounded-full text-brand-brown/50 transition-transform duration-150 active:scale-95"
           aria-label={`Remove ${line.name} from cart`}
         >
           ×

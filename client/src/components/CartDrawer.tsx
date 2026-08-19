@@ -94,7 +94,7 @@ export default function CartDrawer() {
       {isOpen && (
         <div className="fixed inset-0 z-drawer" role="presentation">
           <motion.div
-            className="absolute inset-0 bg-charcoal/50"
+            className="absolute inset-0 bg-brand-ink/50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -106,7 +106,7 @@ export default function CartDrawer() {
             role="dialog"
             aria-modal="true"
             aria-label="Your cart"
-            className="absolute inset-x-0 bottom-0 flex max-h-[88dvh] flex-col rounded-t-3xl bg-creamLt sm:inset-y-0 sm:left-auto sm:right-0 sm:max-h-none sm:w-[min(26rem,100vw)] sm:rounded-none"
+            className="absolute inset-x-0 bottom-0 flex max-h-[88dvh] flex-col rounded-t-card bg-brand-cream sm:inset-y-0 sm:left-auto sm:right-0 sm:max-h-none sm:w-[min(26rem,100vw)] sm:rounded-none"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
@@ -119,17 +119,17 @@ export default function CartDrawer() {
             }}
           >
             {/* Sheet grab handle, mobile only. */}
-            <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-charcoal/20 sm:hidden" />
+            <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-brand-ink/20 sm:hidden" />
 
             <header className="flex items-center justify-between px-5 pb-3 pt-4">
-              <h2 className="font-poster text-2xl uppercase text-charcoal">
-                Cart{itemCount > 0 && <span className="text-brick"> ({itemCount})</span>}
+              <h2 className="font-poster text-2xl uppercase text-brand-redDeep">
+                Cart{itemCount > 0 && <span className="text-brand-redDeep"> ({itemCount})</span>}
               </h2>
               <button
                 type="button"
                 onClick={closeCart}
                 data-autofocus
-                className="grid h-11 w-11 place-items-center rounded-full text-2xl text-charcoal transition-transform duration-150 active:scale-95"
+                className="grid h-11 w-11 place-items-center rounded-full text-2xl text-brand-brown transition-transform duration-150 active:scale-95"
                 aria-label="Close cart"
               >
                 ×
@@ -146,18 +146,18 @@ export default function CartDrawer() {
             <div className="flex-1 overflow-y-auto px-5">
               {lines.length === 0 ? (
                 <div className="py-14 text-center">
-                  <p className="font-body text-sm text-charcoal/70">Your cart is empty.</p>
+                  <p className="font-body text-sm text-brand-brown/70">Your cart is empty.</p>
                   <button
                     type="button"
                     onClick={browseMenu}
-                    className="mt-4 inline-flex h-11 items-center rounded-full bg-brick px-6 font-body text-xs font-semibold uppercase tracking-[0.2em] text-cream transition-transform duration-150 active:scale-95"
+                    className="mt-4 inline-flex h-11 items-center rounded-full bg-brand-red px-6 font-display text-xs font-semibold uppercase tracking-wide text-brand-cream transition-transform duration-150 active:scale-95"
                   >
                     Browse menu
                   </button>
                 </div>
               ) : (
                 <>
-                  <ul className="divide-y divide-charcoal/10">
+                  <ul className="divide-y divide-brand-brown/10">
                     {lines.map((line) => {
                       const item = menuById.get(line.productId);
                       return (
@@ -178,10 +178,10 @@ export default function CartDrawer() {
             {lines.length > 0 && (
               // Pinned footer, clear of the mobile browser chrome.
               <footer
-                className="border-t border-charcoal/10 bg-cream px-5 pt-4"
+                className="border-t border-brand-brown/20 bg-brand-creamMid px-5 pt-4"
                 style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))' }}
               >
-                <dl className="space-y-1 font-body text-sm text-charcoal">
+                <dl className="space-y-1 font-body text-sm text-brand-brown">
                   <div className="flex justify-between">
                     <dt>Subtotal</dt>
                     <dd className="tabular-nums">{GHS(subtotal)}</dd>
@@ -192,7 +192,7 @@ export default function CartDrawer() {
                   </div>
                   <div className="flex justify-between pt-1 text-base font-extrabold">
                     <dt>Total</dt>
-                    <dd className="tabular-nums text-brick">{GHS(subtotal + deliveryFee)}</dd>
+                    <dd className="tabular-nums text-brand-redDeep">{GHS(subtotal + deliveryFee)}</dd>
                   </div>
                 </dl>
                 <button
@@ -201,7 +201,7 @@ export default function CartDrawer() {
                     closeCart();
                     navigate('/checkout');
                   }}
-                  className="mt-4 h-12 w-full rounded-full bg-brick font-body text-xs font-semibold uppercase tracking-[0.2em] text-cream transition-transform duration-150 active:scale-[0.97]"
+                  className="mt-4 h-12 w-full rounded-full bg-brand-red font-display text-xs font-semibold uppercase tracking-wide text-brand-cream transition-transform duration-150 active:scale-[0.97]"
                 >
                   Checkout
                 </button>

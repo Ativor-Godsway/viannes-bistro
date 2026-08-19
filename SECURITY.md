@@ -1,4 +1,4 @@
-# Security audit — Besties
+# Security audit — Viannes Bistro
 
 Audited before first deployment. Severities are as they applied to a public
 deployment, not to a laptop.
@@ -9,7 +9,7 @@ deployment, not to a laptop.
 
 ### 1. The default admin password still works on the shared cluster
 
-`admin@besties.com` / `Admin123!` authenticates against the Atlas database in
+`admin@viannesbistro.com` / `Admin123!` authenticates against the Atlas database in
 `server/.env` **right now**. That password was published in `README.md` and
 pre-filled into the admin login form, so it must be treated as public.
 
@@ -67,8 +67,8 @@ no longer uses `credentials`.
 
 ### Why
 
-The app is served from `besties-zeta.vercel.app` and the API from
-`besties-wyqe.onrender.com`. Those are different **registrable domains**, so
+The app is served from `<your-app>.vercel.app` and the API from
+`<your-api>.onrender.com`. Those are different **registrable domains**, so
 the session cookie was a **third-party cookie**:
 
 - Safari's Intelligent Tracking Prevention blocks third-party cookies
@@ -184,8 +184,8 @@ store — otherwise every state-changing request will 403.
 | Finding | Severity | Fix |
 |---|---|---|
 | **Any client could join the admin socket room.** `socket.on('admin:join')` had no authorisation, so an anonymous websocket received every new order — customer names, phone numbers and delivery addresses. | **Critical** | `admin:join` now requires an admin session read from the handshake cookie and acknowledges false otherwise. Verified: anonymous → `false`, admin → `true`. |
-| **The admin login form shipped working credentials** — `admin@besties.com` / `Admin123!` pre-filled into the inputs and printed beneath them. | **Critical** | Fields start empty; the demo hint is gone; both are `required`. Also removed from `README.md`. |
-| `order:subscribe` accepted any value as a room name. | Low | Validated against the `BST-XXXXXX` order-id format. |
+| **The admin login form shipped working credentials** — `admin@viannesbistro.com` / `Admin123!` pre-filled into the inputs and printed beneath them. | **Critical** | Fields start empty; the demo hint is gone; both are `required`. Also removed from `README.md`. |
+| `order:subscribe` accepted any value as a room name. | Low | Validated against the `VB-XXXXXX` order-id format. |
 | Uploads written to Render's ephemeral disk, and `tsc` never copied `uploads/` into `dist/`. | High | Moved to Cloudinary (below). |
 | No logout endpoint — the client could not clear an httpOnly cookie. | Medium | `POST /api/auth/logout` clears it server-side; `GET /api/auth/me` lets the client rehydrate auth state without reading a token. |
 
@@ -217,8 +217,8 @@ through the admin before now, they were already lost to the ephemeral disk.
 
 - Boot fails with a clear list when `MONGO_URI`, `JWT_SECRET` or
   `CLIENT_ORIGINS` is missing, and on a weak `JWT_SECRET`.
-- Login returns **no token in the body**; sets `besties_session` (HttpOnly) and
-  `besties_csrf` (readable). In a real browser `document.cookie` shows only the
+- Login returns **no token in the body**; sets `viannes_session` (HttpOnly) and
+  `viannes_csrf` (readable). In a real browser `document.cookie` shows only the
   CSRF cookie, and `localStorage` holds no token.
 - State-changing requests without a CSRF header → 403; wrong token → 403;
   correct token → 200. The webhook is exempt and still works.

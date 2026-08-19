@@ -40,9 +40,9 @@ export default function AdminLogin() {
       <form onSubmit={submit} className="w-full max-w-sm rounded-2xl bg-admin-surface p-8 shadow-card">
         <div className="mb-7">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-red text-sm font-semibold text-white">
-            B
+            V
           </span>
-          <h1 className="mt-4 text-xl font-semibold tracking-tight">Besties Admin</h1>
+          <h1 className="mt-4 text-xl font-semibold tracking-tight">Viannes Admin</h1>
           <p className="mt-1 text-sm text-admin-muted">Sign in to manage the shop.</p>
         </div>
 

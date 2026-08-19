@@ -9,9 +9,9 @@
  * secret, no database URI. The server holds those.
  */
 interface ImportMetaEnv {
-  /** Absolute API base URL in production, e.g. https://besties-api.onrender.com/api */
+  /** Absolute API base URL in production, e.g. https://viannes-api.onrender.com/api */
   readonly VITE_API_URL?: string;
-  /** Absolute Socket.IO origin in production, e.g. https://besties-api.onrender.com */
+  /** Absolute Socket.IO origin in production, e.g. https://viannes-api.onrender.com */
   readonly VITE_SOCKET_URL?: string;
   /** Dev only: where the Vite proxy forwards /api. */
   readonly VITE_API_TARGET?: string;
