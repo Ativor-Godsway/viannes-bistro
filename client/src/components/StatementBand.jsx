@@ -1,4 +1,5 @@
 import PillTag from './ui/PillTag';
+import Reveal from './ui/Reveal';
 
 /**
  * Full-bleed deep-red band carrying one line of large display copy.
@@ -29,9 +30,11 @@ export default function StatementBand() {
         </PillTag>
       </div>
 
-      <p className="mx-auto max-w-4xl text-center font-poster text-[clamp(1.75rem,5.5vw,4rem)] uppercase leading-[1.05] text-brand-cream">
-        There's no wrong time for a good plate.
-      </p>
+      <Reveal>
+        <p className="mx-auto max-w-4xl text-center font-poster text-[clamp(1.75rem,5.5vw,4rem)] uppercase leading-[1.05] text-brand-cream">
+          Some afternoons deserve a longer lunch.
+        </p>
+      </Reveal>
 
       {/* The same tags, in flow, wherever the floating set is hidden. */}
       <div className="mt-10 flex flex-wrap justify-center gap-2.5 lg:hidden">

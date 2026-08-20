@@ -23,7 +23,7 @@ interface Props {
 const SEPARATOR = '✳';
 
 export default function Marquee({
-  phrase = 'VIANNES BISTRO ✳ A DELICIOUS JOURNEY ✳ SANDWICHES · SMOOTHIES · HOT PLATES',
+  phrase = 'VIANNES BISTRO ✳ A DELICIOUS JOURNEY ✳ EAT IN UNDER THE TREES',
   repeat = 4,
   className = '',
 }: Props) {

@@ -21,3 +21,4 @@ client/src/lib/menuData.generated.ts
 
 # Local scratch
 *.local
+client/tsconfig.tsbuildinfo

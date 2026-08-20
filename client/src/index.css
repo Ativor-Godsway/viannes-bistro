@@ -116,3 +116,121 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOTION SYSTEM
+
+   One reveal primitive and one fold animation, and that is the whole budget.
+   Everything here animates `transform` and `opacity` ONLY — never width,
+   height, top, margin, or box-shadow spread. Those are the properties that put
+   layout or paint back on the critical path during a scroll.
+
+   The reduced-motion guard lives at the bottom of this block and is the single
+   place that switches all of it off. Components must not re-implement it.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ── <Reveal>: fade + rise, once, on first intersection.
+     The hidden state is applied by JS (see lib/useReveal.ts), never by default.
+     If the script never runs — no JS, an error, a bot — the content is simply
+     visible, which is the only acceptable failure mode for body copy. */
+  [data-reveal='hidden'] {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  [data-reveal] {
+    transition:
+      opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal='shown'] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ── <FoldText>: hoisted out of the component.
+     The original injects this <style> block from inside its render, so every
+     instance writes another copy into <head>. There is one instance on this
+     site and the rule set is static, so it belongs in the stylesheet.
+
+     These sit in @layer components deliberately: the component hardcodes a
+     letter-spacing and line-height tuned for a different typeface, and the
+     hero overrides both with Tailwind utilities. Utilities are emitted after
+     components, so the override wins without an !important anywhere. */
+  .fold-text {
+    display: block;
+    perspective: 800px;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+  }
+  .fold-text__piece {
+    display: inline-block;
+    transform-origin: top center;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+  }
+  /* Kept out of the flow but present for the layout: the sr-only copy is what
+     holds the headline in the accessibility tree and for no-JS. */
+  .fold-text__pieces[data-playing='true'] {
+    will-change: transform;
+  }
+}
+
+/* ── Interaction details. Transform-only, short, and reversible. */
+@layer components {
+  .card-hover {
+    transition: transform 200ms ease-out;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+  }
+  /* The frame clips the scale, so the photo grows inside the card rather than
+     spilling over its rounded corner. */
+  .card-hover__image {
+    transition: transform 200ms ease-out;
+  }
+  .card-hover:hover .card-hover__image {
+    transform: scale(1.04);
+  }
+
+  .press {
+    transition: transform 120ms ease-out;
+  }
+  .press:active {
+    transform: scale(0.97);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   THE ONE REDUCED-MOTION GUARD
+
+   Reveals resolve instantly to their final state rather than fading in.
+   Hover and press transforms are removed rather than shortened.
+   The marquees, the sticker and the placeholder shapes are already stopped by
+   their own rules above; the memories gallery is not mounted at all (it falls
+   back to the static strip — see MemoriesSection).
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal='hidden'],
+  [data-reveal='shown'] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .card-hover,
+  .card-hover__image,
+  .press {
+    transition: none !important;
+  }
+  .card-hover:hover,
+  .card-hover:hover .card-hover__image,
+  .press:active {
+    transform: none !important;
+  }
+  .fold-text__piece {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

@@ -25,10 +25,12 @@ export default function ProductCard({ product }) {
   const range = product.raw ? priceRange(product.raw) : null;
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-card border border-brand-brown/20 bg-brand-creamMid">
+    <article className="card-hover flex h-full flex-col overflow-hidden rounded-card border border-brand-brown/20 bg-brand-creamMid">
       {/* Photo well. The catalogue images are transparent cut-outs, so they sit
           directly on the panel with object-contain — no crop, no disc. */}
-      <div className="relative aspect-[4/3] w-full">
+      {/* overflow-hidden is what contains the hover scale inside the card's
+          rounded corner instead of letting the photo spill past it. */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden">
         {product.image ? (
           <div className="absolute inset-0 grid place-items-center p-6">
             <FoodImage
@@ -37,7 +39,7 @@ export default function ProductCard({ product }) {
               sizes="(max-width: 639px) 88vw, (max-width: 767px) 44vw, 340px"
               seed={product.seed}
               fallbackPalette="orange"
-              className="h-full w-full"
+              className="card-hover__image h-full w-full"
             />
           </div>
         ) : (
