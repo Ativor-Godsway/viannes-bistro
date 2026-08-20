@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Hero from '../../components/Hero';
 import StatementBand from '../../components/StatementBand';
-import MemoriesStrip from '../../components/MemoriesStrip';
+import MemoriesSection from '../../components/MemoriesSection';
 import MenuSection from '../../components/MenuSection';
 import Marquee from '../../components/ui/Marquee';
 
@@ -18,7 +18,9 @@ import Marquee from '../../components/ui/Marquee';
  *
  * The JOLLOF feature block is gone: it sold one arbitrary item from the
  * inherited placeholder catalogue and carried an invented five-star rating.
- * The three-step "how it works" strip is gone too, replaced by MEMORIES.
+ * The three-step "how it works" strip is gone too, replaced by MEMORIES, which
+ * is deliberately LAST: CustomerLayout renders the footer immediately after
+ * <main>, so the memories band and the footer meet directly.
  */
 export default function Home() {
   const { hash } = useLocation();
@@ -43,7 +45,7 @@ export default function Home() {
       <StatementBand />
       <Marquee />
       <MenuSection />
-      <MemoriesStrip />
+      <MemoriesSection />
     </div>
   );
 }

@@ -34,7 +34,76 @@ export const SITE_PHOTOS = {
     file: 'banana-nutella',
     alt: 'A banana and chocolate smoothie in a domed cup, on a painted wooden bench in the sun',
   },
+
+  // ── The memories set. These carry a `caption` as well as `alt`, because the
+  // gallery draws the caption as a visible label under each card while `alt` is
+  // what a screen reader hears. They are two different jobs: the caption is
+  // voice, the alt is description, and collapsing them makes one of them bad.
+  'garden-lights': {
+    file: 'garden-lights',
+    caption: 'The garden after dark',
+    alt: 'Strings of warm bulbs hung under a large tree over the bistro courtyard at dusk',
+  },
+  'garden-path': {
+    file: 'garden-path',
+    caption: 'Walk in',
+    alt: 'Two people walking up the lit path into the bistro at night, under heavy green branches',
+  },
+  'long-lunch': {
+    file: 'long-lunch',
+    caption: 'Long lunch, longer talk',
+    alt: 'Two women talking across a wooden table with plates of food and an open laptop between them',
+  },
+  'yap-station': {
+    file: 'yap-station',
+    caption: 'Yap station',
+    alt: 'Two friends mid-conversation at a table, one holding a sandwich, iced drinks in front of them',
+  },
+  'first-bite': {
+    file: 'first-bite',
+    caption: 'First bite',
+    alt: 'A smiling customer in a headwrap taking a drink at a table set with a sandwich and fries',
+  },
+  'waffles-for-two': {
+    file: 'waffles-for-two',
+    caption: 'Waffles for two',
+    alt: 'Two trays of waffles with ice cream and iced coffees, shared across a table',
+  },
+  'table-in-the-shade': {
+    file: 'table-in-the-shade',
+    caption: 'A table in the shade',
+    alt: 'A club sandwich and two smoothies on a wooden table under the trees',
+  },
+  'toasties-and-fries': {
+    file: 'toasties-and-fries',
+    caption: 'Toasties and fries',
+    alt: 'A blue tray of toasted sandwiches with a bowl of fries and ketchup, seen from above',
+  },
 };
+
+/**
+ * The MEMORIES gallery, in display order.
+ *
+ * One list, read by BOTH the WebGL gallery and the static strip it falls back
+ * to — so the two can never disagree about what is in the section. Reordering
+ * or adding is an edit here and nowhere else.
+ *
+ * Opens and closes on the place rather than the food: the bistro is a garden
+ * you sit in, and that is the thing the section exists to say.
+ */
+export const MEMORY_SLUGS = [
+  'garden-lights',
+  'long-lunch',
+  'first-bite',
+  'waffles-for-two',
+  'yap-station',
+  'toasties-and-fries',
+  'table-in-the-shade',
+  'garden-path',
+];
+
+/** The memories, resolved to `{ slug, file, caption, alt }`, in display order. */
+export const MEMORIES = MEMORY_SLUGS.map((slug) => ({ slug, ...SITE_PHOTOS[slug] }));
 
 /** Where the pipeline writes derivatives; see scripts/optimize-images.mjs. */
 export const OPT_DIR = '/photos/opt';

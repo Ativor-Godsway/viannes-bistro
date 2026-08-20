@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import Reveal from './ui/Reveal';
 
 /** Smooth-scrolls to the menu section — it is on this page, not on a route. */
 function toMenu() {
@@ -21,18 +22,17 @@ export default function Footer() {
   return (
     <footer className="overflow-hidden bg-brand-redDeep text-brand-cream">
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-14 sm:grid-cols-3 sm:px-8">
-        <div>
+        <Reveal index={0}>
           <p className="font-poster text-xl lowercase text-brand-cream">viannes</p>
           <p className="font-display text-[0.55rem] font-semibold uppercase tracking-[0.35em] text-brand-cream/85">
             Bistro
           </p>
           <p className="mt-4 max-w-xs font-body text-sm text-brand-cream/75">
-            Sandwiches, hot plates and smoothies, delivered across the University of Ghana,
-            Legon.
+            A garden bistro at the University of Ghana, Legon. Eat in or order ahead.
           </p>
-        </div>
+        </Reveal>
 
-        <div>
+        <Reveal index={1}>
           <h4 className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-brand-cream">
             Explore
           </h4>
@@ -58,11 +58,16 @@ export default function Footer() {
               </Link>
             </li>
           </ul>
-        </div>
+        </Reveal>
 
-        <div>
-          <h4 className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-brand-cream">
-            Contact
+        {/* The nav's FIND US pill scrolls here — this block is the only place
+            on the site that answers where the bistro actually is. */}
+        <Reveal index={2}>
+          <h4
+            id="find-us"
+            className="scroll-mt-24 font-display text-xs font-semibold uppercase tracking-[0.2em] text-brand-cream"
+          >
+            Find us
           </h4>
           <ul className="mt-4 space-y-2.5 font-body text-sm text-brand-cream/80">
             {/* TODO(viannes): real street address. */}
@@ -77,7 +82,7 @@ export default function Footer() {
             {/* TODO(viannes): real social handle, and make it a link once known. */}
             <li>Social — to be confirmed</li>
           </ul>
-        </div>
+        </Reveal>
       </div>
 
       <p className="border-t border-brand-cream/15 py-4 text-center font-body text-xs text-brand-cream/60">

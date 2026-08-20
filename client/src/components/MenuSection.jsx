@@ -1,4 +1,5 @@
 import ProductCard from './ProductCard';
+import Reveal from './ui/Reveal';
 import { useCatalogue } from '../lib/useCatalogue';
 
 /**
@@ -42,8 +43,13 @@ export default function MenuSection() {
           </p>
         ) : (
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 md:gap-8">
-            {products.map((product) => (
-              <ProductCard key={product._id} product={product} />
+            {products.map((product, i) => (
+              // The stagger is capped: past the first row the delay stops
+              // growing, or the last card on a six-up grid waits a third of a
+              // second after the first for no reason anyone can perceive.
+              <Reveal key={product._id} index={Math.min(i, 2)} className="h-full">
+                <ProductCard product={product} />
+              </Reveal>
             ))}
           </div>
         )}

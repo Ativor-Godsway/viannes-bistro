@@ -40,9 +40,14 @@ const MENU_WIDTHS = [240, 480, 640];
 // The hero product is both the hero object and the first menu category.
 const MENU_HERO = { pizza: [640, 1280] };
 
-// The photographs render at ~340px (memories row) up to ~560px (hero frame),
+// The photographs render at ~340px (static strip) up to ~560px (hero frame),
 // so 1200 covers the largest at 2×. Sources cap most of these anyway.
 const PHOTO_WIDTHS = [480, 800, 1200];
+
+// The memories gallery draws its cards on a GPU cylinder at roughly 400–500px
+// of screen width, and every source is capped near 1050px anyway. 1200 would be
+// a width no source can supply.
+const MEMORY_WIDTHS = [480, 800];
 
 const SETS = [
   {
@@ -63,6 +68,19 @@ const SETS = [
     fallback: 'jpeg',
     manifest: path.join(ROOT, 'src', 'data', 'photoManifest.json'),
   },
+  {
+    // Shares the photos manifest and the photos data layer on purpose: as far
+    // as the app is concerned there is ONE set of editorial photographs, and a
+    // second parallel lookup is how a slug ends up resolving in one component
+    // and not another. Only the source directory and the widths differ.
+    name: 'memories',
+    dir: path.join(ROOT, 'assets-src', 'memories'),
+    out: path.join(ROOT, 'public', 'photos', 'opt'),
+    widths: () => MEMORY_WIDTHS,
+    extra: {},
+    fallback: 'jpeg',
+    manifest: path.join(ROOT, 'src', 'data', 'photoManifest.json'),
+  },
 ];
 
 const kb = (n) => `${(n / 1024).toFixed(1)}KB`;
@@ -74,6 +92,9 @@ function encodeFallback(pipeline, format) {
     : pipeline.png({ compressionLevel: 9, palette: true, quality: 85 });
 }
 
+/** manifest path → merged { name: widths[] } across every set writing to it. */
+const manifests = new Map();
+
 async function runSet(set) {
   const out = set.out;
   await mkdir(out, { recursive: true });
@@ -83,7 +104,9 @@ async function runSet(set) {
   let webpTotal = 0;
   let fallbackTotal = 0;
   const rows = [];
-  const manifest = {};
+  // Shared across sets that write the same manifest — see the memories set.
+  const manifest = manifests.get(set.manifest) ?? {};
+  manifests.set(set.manifest, manifest);
 
   for (const file of files) {
     const name = path.basename(file, '.png');
@@ -124,9 +147,6 @@ async function runSet(set) {
     }
   }
 
-  // The app reads this so srcset always matches what actually exists on disk.
-  await writeFile(set.manifest, JSON.stringify(manifest, null, 2) + '\n');
-
   console.log(`\n  ${set.name}`);
   console.log(`  derivative                webp   ${set.fallback.padStart(8)}`);
   console.log('  ' + '─'.repeat(44));
@@ -139,6 +159,13 @@ async function runSet(set) {
 
 async function main() {
   for (const set of SETS) await runSet(set);
+
+  // Written once per manifest, after every set that feeds it has run — the app
+  // reads these so srcset always matches what actually exists on disk.
+  for (const [file, manifest] of manifests) {
+    const sorted = Object.fromEntries(Object.entries(manifest).sort(([a], [b]) => a.localeCompare(b)));
+    await writeFile(file, JSON.stringify(sorted, null, 2) + '\n');
+  }
   console.log('');
 }
 

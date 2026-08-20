@@ -20,8 +20,11 @@ interface BaseProps {
   className?: string;
 }
 
+// `press` is the shared :active scale — see the motion block in index.css.
+// It is a class rather than a Tailwind `active:scale-97` so that the single
+// reduced-motion guard in that stylesheet can switch it off in one place.
 const BASE =
-  'inline-flex items-center justify-center gap-2 rounded-full font-display text-xs font-semibold uppercase tracking-wide transition-colors duration-150 min-h-[44px] px-6 disabled:cursor-not-allowed disabled:opacity-40';
+  'press inline-flex items-center justify-center gap-2 rounded-full font-display text-xs font-semibold uppercase tracking-wide transition-colors duration-150 min-h-[44px] px-6 disabled:cursor-not-allowed disabled:opacity-40';
 
 const VARIANTS: Record<PillVariant, string> = {
   // Cream on brand red: the primary call to action on a cream surface.

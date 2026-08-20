@@ -1,3 +1,4 @@
+import FoldText from './ui/FoldText';
 import PhotoSlot from './ui/PhotoSlot';
 import PillButton from './ui/PillButton';
 import StickerBadge from './ui/StickerBadge';
@@ -35,14 +36,29 @@ export default function Hero() {
             Sandwiches · Hot plates · Smoothies
           </p>
 
-          <h1 className="mt-4 font-poster text-[clamp(2.5rem,9vw,5.5rem)] uppercase leading-[0.88] tracking-tight text-brand-redDeep">
-            <span className="block">Made Fresh</span>
-            <span className="block">All Day</span>
-          </h1>
+          {/*
+            The ONE FoldText on the site. `leading-[0.88]` and `tracking-tight`
+            are Tailwind utilities overriding the component's own hardcoded
+            line-height and letter-spacing, which are tuned for a different face
+            and fight Titan One — utilities are emitted after the component
+            layer, so they win without an !important.
+          */}
+          <FoldText
+            as="h1"
+            splitBy="word"
+            trigger="mount"
+            duration={0.5}
+            stagger={0.05}
+            hinge="top"
+            color="#911A1C"
+            className="mt-4 font-poster text-[clamp(2.5rem,9vw,5.5rem)] uppercase !leading-[0.88] !tracking-tight text-brand-redDeep"
+          >
+            {'Made Fresh\nAll Day'}
+          </FoldText>
 
           <p className="mt-6 max-w-md font-body text-base leading-relaxed text-brand-brown">
-            Blended, grilled and plated to order — then carried to you across Legon. Morning,
-            afternoon or late.
+            Sandwiches, hot plates and smoothies, made to order under the trees. Eat in with us
+            — or have it sent your way.
           </p>
 
           <PillButton as="a" href="#menu" variant="solid" className="mt-7">

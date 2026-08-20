@@ -8,9 +8,41 @@
     800,
     1007
   ],
+  "first-bite": [
+    480,
+    617
+  ],
+  "garden-lights": [
+    480,
+    800
+  ],
+  "garden-path": [
+    480,
+    800
+  ],
+  "long-lunch": [
+    480,
+    770
+  ],
   "smoothies": [
     480,
     800,
     1007
+  ],
+  "table-in-the-shade": [
+    480,
+    800
+  ],
+  "toasties-and-fries": [
+    480,
+    800
+  ],
+  "waffles-for-two": [
+    480,
+    800
+  ],
+  "yap-station": [
+    480,
+    785
   ]
 }
