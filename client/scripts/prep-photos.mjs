@@ -78,7 +78,7 @@ const SETS = {
     // and a Viannes logo sticker bottom-right. Both cropped out: the gallery
     // draws its own labels, and a second wordmark inside a card fights the one
     // in the navbar.
-    { raw: 'memories/shot-1.png', slug: 'first-bite', ratio: 3 / 4, crop: { left: 0.225, right: 0.275, top: 0.3, bottom: 0.155 } },
+    { raw: 'memories/shot-1.png', slug: 'first-bite', ratio: 3 / 4, crop: { left: 0.225, right: 0.275, top: 0.34, bottom: 0.155 } },
     // Clean posts — these only need trimming to the common ratio.
     { raw: 'memories/shot-2.png', slug: 'waffles-for-two', ratio: 3 / 4, crop: { left: 0.041, right: 0.041, top: 0, bottom: 0 } },
     { raw: 'memories/shot-8.png', slug: 'table-in-the-shade', ratio: 3 / 4, crop: { left: 0, right: 0, top: 0.073, bottom: 0 } },

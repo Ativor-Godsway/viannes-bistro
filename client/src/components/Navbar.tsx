@@ -1,17 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useCart } from "../store/CartContext";
-import Wordmark from "./ui/Wordmark";
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useCart } from '../store/CartContext';
+import Wordmark from './ui/Wordmark';
 
 /** Smooth-scrolls to an element, or to the top when no id is given. */
 function scrollTo(id?: string) {
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const behavior: ScrollBehavior = reduced ? "auto" : "smooth";
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const behavior: ScrollBehavior = reduced ? 'auto' : 'smooth';
   if (!id) {
     window.scrollTo({ top: 0, behavior });
     return;
   }
-  document.getElementById(id)?.scrollIntoView({ behavior, block: "start" });
+  document.getElementById(id)?.scrollIntoView({ behavior, block: 'start' });
 }
 
 /**
@@ -41,9 +41,9 @@ function scrollTo(id?: string) {
  * contact block, which is the only place on the site that answers the question.
  */
 const LINKS = [
-  { label: "Menu", id: "menu", to: "/#menu" },
-  { label: "Order", id: "menu", to: "/#menu" },
-  { label: "Memories", id: "memories", to: "/#memories" },
+  { label: 'Menu', id: 'menu', to: '/#menu' },
+  { label: 'Order', id: 'menu', to: '/#menu' },
+  { label: 'Memories', id: 'memories', to: '/#memories' },
 ];
 
 /** How far you must scroll before the bar tightens. */
@@ -61,15 +61,10 @@ export default function Navbar() {
     if (addPulse === seenPulse.current) return;
     seenPulse.current = addPulse;
     const el = badgeRef.current;
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-      return;
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     el.animate(
-      [
-        { transform: "scale(1)" },
-        { transform: "scale(1.25)" },
-        { transform: "scale(1)" },
-      ],
-      { duration: 250, easing: "ease-out" },
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }],
+      { duration: 250, easing: 'ease-out' },
     );
   }, [addPulse]);
 
@@ -86,14 +81,14 @@ export default function Navbar() {
       setCondensed(next);
     };
     onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const isHome = pathname === "/";
+  const isHome = pathname === '/';
 
   const linkClass =
-    "font-display text-xs font-semibold uppercase tracking-wide text-brand-cream/85 transition-colors duration-150 hover:text-brand-cream";
+    'font-display text-xs font-semibold uppercase tracking-wide text-brand-cream/85 transition-colors duration-150 hover:text-brand-cream';
 
   return (
     /*
@@ -114,7 +109,7 @@ export default function Navbar() {
         className={`pointer-events-auto absolute inset-x-0 top-0 bg-brand-redDeep transition-[height,box-shadow] duration-200 ease-out ${
           // An inset shadow, not a border: a border would add to the box height
           // and undo the whole point of the shell above.
-          condensed ? "h-[58px] shadow-[inset_0_-1px_0_#6E1214]" : "h-[68px]"
+          condensed ? 'h-[58px] shadow-[inset_0_-1px_0_#6E1214]' : 'h-[68px]'
         }`}
       >
         <nav className="relative mx-auto flex h-full max-w-6xl items-center justify-between gap-4 px-5">
@@ -128,11 +123,7 @@ export default function Navbar() {
               <Wordmark variant="text" />
             </button>
           ) : (
-            <Link
-              to="/"
-              className="shrink-0"
-              aria-label="Viannes Bistro — back to the shop"
-            >
+            <Link to="/" className="shrink-0" aria-label="Viannes Bistro — back to the shop">
               <Wordmark variant="text" />
             </Link>
           )}
@@ -167,7 +158,7 @@ export default function Navbar() {
           {isHome ? (
             <button
               type="button"
-              onClick={() => scrollTo("find-us")}
+              onClick={() => scrollTo('find-us')}
               className={`press ml-auto hidden min-h-[40px] shrink-0 items-center rounded-full border-2 border-brand-cream/70 px-4 font-display text-xs font-semibold uppercase tracking-wide text-brand-cream transition-colors duration-150 hover:border-brand-cream hover:bg-brand-cream hover:text-brand-redDeep sm:inline-flex sm:ml-0`}
             >
               Find us
@@ -188,8 +179,8 @@ export default function Navbar() {
             className="press ml-auto inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border-2 border-brand-cream px-4 font-display text-xs font-semibold uppercase tracking-wide text-brand-cream transition-colors duration-150 hover:bg-brand-cream hover:text-brand-redDeep sm:ml-0"
             aria-label={
               itemCount > 0
-                ? `Open cart, ${itemCount} item${itemCount === 1 ? "" : "s"}`
-                : "Open cart"
+                ? `Open cart, ${itemCount} item${itemCount === 1 ? '' : 's'}`
+                : 'Open cart'
             }
           >
             <span>Cart</span>

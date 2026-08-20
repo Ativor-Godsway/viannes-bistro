@@ -124,6 +124,20 @@ export const srcAt = (file, ext = 'jpg') => {
 };
 
 /**
+ * The smallest derivative that is still at least `targetPx` wide.
+ *
+ * For the WebGL gallery, which uploads one fixed bitmap per card as a texture
+ * and so cannot use `srcset` the way an <img> does. Without this every card
+ * downloads its largest derivative on every device — which on a 1× screen is
+ * twice the bytes for pixels the GPU immediately throws away.
+ */
+export const srcNear = (file, targetPx, ext = 'jpg') => {
+  const widths = widthsFor(file);
+  const pick = widths.find((w) => w >= targetPx) ?? widths[widths.length - 1];
+  return `${OPT_DIR}/${file}-${pick}.${ext}`;
+};
+
+/**
  * The entry for a slug, or null when there is no such photograph.
  *
  * Falls back to the manifest, so dropping a new file in assets-src/photos/ and
